@@ -76,13 +76,15 @@ WSGI_APPLICATION = 'GemTopia.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
-
+import db_conf 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'gemtopia_db',
-        'USER': 'gemtopia',
-        'PASSWORD': 'gemtopia_1234',
+        'ENGINE': 'django.db.backends.mysql', 
+        'NAME': db_conf.NAME,
+        'USER': db_conf.USER,
+        'PASSWORD': db_conf.PASSWORD,
+        'HOST': 'localhost',  
+        'PORT': '3306',
     }
 }
 
