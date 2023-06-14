@@ -6,7 +6,7 @@ def game_master_avatar_directory_path(instance, filename):
 
 
 class GameMaster(models.Model):
-    username = models.CharField(max_length=50)
+    username = models.CharField(max_length=90)
     information = models.TextField()
     avatar = models.ImageField(upload_to=game_master_avatar_directory_path, blank=True, null=True)
     created_at = models.DateField(auto_now_add=True)

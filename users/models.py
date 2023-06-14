@@ -19,7 +19,7 @@ class User(AbstractUser):
     VALID_AVATAR_EXTENSION = ['png', 'jpg', 'jpeg']
     email = models.EmailField(unique=True)
     inviter = models.ForeignKey('self', on_delete=models.CASCADE, related_name='invited', blank=True, null=True)
-    referrer_code = models.CharField(max_length=50, blank=True, null=True)
+    referrer_code = models.CharField(max_length=90, blank=True, null=True)
     avatar = models.ImageField(upload_to=user_avatar_directory_path,
                                validators=[FileExtensionValidator(VALID_AVATAR_EXTENSION), validate_image_size],
                                blank=True, null=True)
@@ -29,7 +29,7 @@ class User(AbstractUser):
     deleted_at = models.DateField(null=True)
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']
+    REQUIRED_FIELDS = ['username','password']
 
     class Meta:
         ordering = ['created_at']
