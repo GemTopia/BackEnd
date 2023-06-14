@@ -1,0 +1,5 @@
+Django
+pillow
+mysqlclient
+djangorestframework
+

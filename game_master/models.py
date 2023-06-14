@@ -20,3 +20,4 @@ class GameMaster(models.Model):
         ordering = ['created_at']
         verbose_name = 'game master'
         verbose_name_plural = 'game masters'
+        db_table = 'game_master'

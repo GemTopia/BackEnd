@@ -29,12 +29,13 @@ class User(AbstractUser):
     deleted_at = models.DateField(null=True)
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username','password']
+    REQUIRED_FIELDS = ['username', 'password']
 
     class Meta:
         ordering = ['created_at']
         verbose_name = 'user'
         verbose_name_plural = 'users'
+        db_table = 'user'
 
     def __str__(self):
         return self.username

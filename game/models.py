@@ -23,6 +23,7 @@ class Game(models.Model):
 
     class Meta:
         ordering = ['created_at']
+        db_table = 'game'
 
 
 class Report(models.Model):
@@ -39,6 +40,7 @@ class Report(models.Model):
 
     class Meta:
         ordering = ['created_at']
+        db_table = 'report'
 
 
 class Like(models.Model):
@@ -52,11 +54,15 @@ class Like(models.Model):
 
     class Meta:
         ordering = ['created_at']
+        db_table = 'like'
 
 
 class GamePicture(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='game_picture')
     picture = models.ImageField(upload_to=game_picture_directory_path, blank=True, null=True)
+
+    class Meta:
+        db_table = 'game_picture'
 
 
 class PlayedGame(models.Model):
@@ -73,3 +79,4 @@ class PlayedGame(models.Model):
         ordering = ['updated_at']
         verbose_name = 'played game'
         verbose_name_plural = 'played games'
+        db_table = 'playes_game'

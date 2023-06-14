@@ -11,6 +11,7 @@ class Wallet(models.Model):
 
     class Meta:
         ordering = ['created_at']
+        db_table = 'wallet'
 
 
 class Transaction(models.Model):
@@ -21,3 +22,4 @@ class Transaction(models.Model):
 
     class Meta:
         ordering = ['created_at']
+        db_table = 'transaction'
