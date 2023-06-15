@@ -1,5 +1,6 @@
+from django.contrib.auth.base_user import AbstractBaseUser
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import PermissionsMixin
 from django.conf import settings
 from django.core.validators import ValidationError, FileExtensionValidator
 from django.template.defaultfilters import filesizeformat
@@ -15,8 +16,11 @@ def validate_image_size(image):
         raise ValidationError('Max image size should be '.format((filesizeformat(settings.MAX_UPLOAD_IMAGE_SIZE))))
 
 
-class User(AbstractUser):
+class User(AbstractBaseUser, PermissionsMixin):
     VALID_AVATAR_EXTENSION = ['png', 'jpg', 'jpeg']
+    id = models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')
+    username = models.CharField(max_length=150, unique=True)
+    password = models.CharField(max_length=128)
     email = models.EmailField(unique=True)
     inviter = models.ForeignKey('self', on_delete=models.CASCADE, related_name='invited', blank=True, null=True)
     referrer_code = models.CharField(max_length=90, blank=True, null=True)
