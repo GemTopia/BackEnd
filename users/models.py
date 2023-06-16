@@ -28,6 +28,7 @@ class User(AbstractBaseUser, PermissionsMixin):
                                validators=[FileExtensionValidator(VALID_AVATAR_EXTENSION), validate_image_size],
                                blank=True, null=True)
     total_gemyto = models.IntegerField(default=0)
+    is_active = models.BooleanField(default=True)
     is_admin=models.BooleanField(default=False)
     created_at = models.DateField(auto_now_add=True)
     updated_at = models.DateField(auto_now=True)
