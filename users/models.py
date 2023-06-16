@@ -20,7 +20,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     VALID_AVATAR_EXTENSION = ['png', 'jpg', 'jpeg']
     id = models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')
     username = models.CharField(max_length=150, unique=True)
-    password = models.CharField(max_length=128)
     email = models.EmailField(unique=True)
     inviter = models.ForeignKey('self', on_delete=models.CASCADE, related_name='invited', blank=True, null=True)
     referrer_code = models.CharField(max_length=90, blank=True, null=True)
@@ -28,9 +27,11 @@ class User(AbstractBaseUser, PermissionsMixin):
                                validators=[FileExtensionValidator(VALID_AVATAR_EXTENSION), validate_image_size],
                                blank=True, null=True)
     total_gemyto = models.IntegerField(default=0)
+    is_admin=models.BooleanField(default=False)
     created_at = models.DateField(auto_now_add=True)
     updated_at = models.DateField(auto_now=True)
     deleted_at = models.DateField(null=True)
+
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'password']
@@ -43,3 +44,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.username
+
+    @property
+    def is_staff(self):
+        return self.is_admin
