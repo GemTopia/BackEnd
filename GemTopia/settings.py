@@ -35,13 +35,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework.authtoken',
+    
+    # Local apps
     'home.apps.HomeConfig',
     'users.apps.UsersConfig',
     'wallet.apps.WalletConfig',
     'game_master.apps.GameMasterConfig',
     'landing.apps.LandingConfig',
     'game.apps.GameConfig',
-    'rest_framework.authtoken',
 ]
 
 MIDDLEWARE = [
@@ -76,6 +78,7 @@ WSGI_APPLICATION = 'GemTopia.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
+
 import db_conf 
 DATABASES = {
     'default': {
@@ -130,5 +133,6 @@ MEDIA_ROOT = BASE_DIR / 'media'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'users.User'
+
 # 400 KB
 MAX_UPLOAD_IMAGE_SIZE = '419430'

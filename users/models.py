@@ -4,6 +4,7 @@ from django.contrib.auth.models import PermissionsMixin
 from django.conf import settings
 from django.core.validators import ValidationError, FileExtensionValidator
 from django.template.defaultfilters import filesizeformat
+from users.managers import UserManager
 
 
 def user_avatar_directory_path(instance, filename):
@@ -32,6 +33,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     updated_at = models.DateField(auto_now=True)
     deleted_at = models.DateField(null=True)
 
+    objects = UserManager()
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'password']
