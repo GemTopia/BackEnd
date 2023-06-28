@@ -8,7 +8,7 @@ from users.managers import UserManager
 
 
 def user_avatar_directory_path(instance, filename):
-    return 'user/{0}/avatar/{1}'.format(str(instance.username), filename)
+    return 'user/{0}/avatar/{1}'.format(str(instance.user_name), filename)
 
 
 def validate_image_size(image):
@@ -20,7 +20,7 @@ def validate_image_size(image):
 class User(AbstractBaseUser, PermissionsMixin):
     VALID_AVATAR_EXTENSION = ['png', 'jpg', 'jpeg']
     id = models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')
-    username = models.CharField(max_length=150, unique=True)
+    user_name = models.CharField(max_length=150, unique=True)
     email = models.EmailField(unique=True)
     inviter = models.ForeignKey('self', on_delete=models.CASCADE, related_name='invited', blank=True, null=True)
     referrer_code = models.CharField(max_length=90, blank=True, null=True)
@@ -37,7 +37,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username', 'password']
+    REQUIRED_FIELDS = ['user_name', 'password']
 
     class Meta:
         ordering = ['created_at']
@@ -46,7 +46,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         db_table = 'user'
 
     def __str__(self):
-        return self.username
+        return self.user_name
 
     @property
     def is_staff(self):
