@@ -1,7 +1,8 @@
 from django.contrib.auth.models import BaseUserManager
+import secrets
 
 class UserManager(BaseUserManager):
-    def create_user(self, user_name, email, password):
+    def create_user(self, user_name, email, password,inviter_id=-1 ):
         if not user_name:
             raise ValueError("Users must have a username")
 
@@ -14,9 +15,12 @@ class UserManager(BaseUserManager):
         user = self.model(
             user_name=user_name,
             email=self.normalize_email(email),
-        )
+            inviter_id=inviter_id
 
+        )
         user.set_password(password)
+        user.save(using=self._db)
+        user.referrer_code=secrets.token_urlsafe(user.id)
         user.save(using=self._db)
         return user
 
