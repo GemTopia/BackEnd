@@ -5,16 +5,22 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('user_name', 'email', 'referrer_code','password',)
+        fields = ('user_name', 'email','password',)
         extra_kwargs = {
             'password': {'write_only':True},
             }
 
-    def create(self, validated_data):
+    def create(self, validated_data,referrer_code):
 
-        if validated_data['referrer_code']:
+        if referrer_code:
+            inviter_id = User.objects.filter(referrer_code=referrer_code).values_list('id', flat=True).first()
+            if inviter_id is not None:
+                inviter_id = int(inviter_id)
+            else:
+                raise "there isn't any user with this referrer code"
 
-            inviter_id=User.objects.get(referrer_code=validated_data['referrer_code'])
+        else:
+            inviter_id=None
 
         return User.objects.create_user(user_name=validated_data['user_name'],
                                         email=validated_data['email'], 

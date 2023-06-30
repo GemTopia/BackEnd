@@ -2,7 +2,7 @@ from django.contrib.auth.models import BaseUserManager
 import secrets
 
 class UserManager(BaseUserManager):
-    def create_user(self, user_name, email, password,inviter_id=-1 ):
+    def create_user(self, user_name, email, password,inviter_id ):
         if not user_name:
             raise ValueError("Users must have a username")
 
