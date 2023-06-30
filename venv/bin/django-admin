@@ -1,4 +1,4 @@
-#!/home/aroosha/PycharmProjects/BackEnd/venv/bin/python3
+#!/home/bsh/BackEnd/venv/bin/python3
 # -*- coding: utf-8 -*-
 import re
 import sys

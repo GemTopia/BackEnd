@@ -1,15 +1,8 @@
 from django.contrib.auth.models import BaseUserManager
-import secrets
-def int_to_unique_string(num: int) -> str:
-    """
-    Hashes an integer and returns a unique string representation.
-    """
-    hash_val = hash(num+100000000)
-    hex_str = hex(hash_val)[2:]  # Remove "0x" prefix
-    return hex_str
+from utils import int_to_unique_string
 
 class UserManager(BaseUserManager):
-    def create_user(self, user_name, email, password,inviter_id ):
+    def create_user(self, user_name, email, password, inviter_id):
         if not user_name:
             raise ValueError("Users must have a username")
 
@@ -36,6 +29,7 @@ class UserManager(BaseUserManager):
             user_name=user_name,
             email=email,
             password=password,
+            inviter_id=None
         )
         user.is_admin = True
         user.is_superuser = True
