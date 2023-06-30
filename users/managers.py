@@ -1,5 +1,12 @@
 from django.contrib.auth.models import BaseUserManager
 import secrets
+def int_to_unique_string(num: int) -> str:
+    """
+    Hashes an integer and returns a unique string representation.
+    """
+    hash_val = hash(num+100000000)
+    hex_str = hex(hash_val)[2:]  # Remove "0x" prefix
+    return hex_str
 
 class UserManager(BaseUserManager):
     def create_user(self, user_name, email, password,inviter_id ):
@@ -20,7 +27,7 @@ class UserManager(BaseUserManager):
         )
         user.set_password(password)
         user.save(using=self._db)
-        user.referrer_code=secrets.token_urlsafe(user.id)
+        user.referrer_code=int_to_unique_string(user.id)
         user.save(using=self._db)
         return user
 
