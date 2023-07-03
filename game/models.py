@@ -1,19 +1,32 @@
 from django.db import models
+from GemTopia import settings
 from users.models import User
 from game_master.models import GameMaster
+from django.template.defaultfilters import filesizeformat
+from django.core.validators import ValidationError, FileExtensionValidator
 
 
 def game_picture_directory_path(instance, filename):
     return 'game/{0}/picture/{1}'.format(str(instance.game.name), filename)
 
 
+def validate_image_size(image):
+    filesize = image.size
+    if filesize > int(settings.MAX_UPLOAD_IMAGE_SIZE):
+        raise ValidationError('Max image size should be '.format((filesizeformat(settings.MAX_UPLOAD_IMAGE_SIZE))))
+
+
 class Game(models.Model):
+    VALID_AVATAR_EXTENSION = ['png', 'jpg', 'jpeg']
     bio = models.TextField()
     name = models.CharField(max_length=200)
-    num_of_report = models.IntegerField()
+    num_of_report = models.IntegerField(default=0)
     game_type = models.CharField(max_length=90)
     game_master = models.ForeignKey(GameMaster, on_delete=models.SET_NULL, related_name='game_master_games', null=True)
     is_active = models.BooleanField()
+    cover_image = models.ImageField(upload_to=game_picture_directory_path,
+                                    validators=[FileExtensionValidator(VALID_AVATAR_EXTENSION), validate_image_size],
+                                    blank=True, null=True)
     created_at = models.DateField(auto_now_add=True)
     updated_at = models.DateField(auto_now=True)
     deleted_at = models.DateField(null=True)

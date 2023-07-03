@@ -1,7 +1,7 @@
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.db import models
 from django.contrib.auth.models import PermissionsMixin
-from django.conf import settings
+from GemTopia import settings
 from django.core.validators import ValidationError, FileExtensionValidator
 from django.template.defaultfilters import filesizeformat
 from users.managers import UserManager
@@ -29,7 +29,7 @@ class User(AbstractBaseUser, PermissionsMixin):
                                blank=True, null=True)
     total_gemyto = models.IntegerField(default=0)
     is_active = models.BooleanField(default=True)
-    is_admin=models.BooleanField(default=False)
+    is_admin = models.BooleanField(default=False)
     created_at = models.DateField(auto_now_add=True)
     updated_at = models.DateField(auto_now=True)
     deleted_at = models.DateField(null=True)

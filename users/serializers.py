@@ -1,13 +1,13 @@
 from rest_framework import serializers
 from users.models import User
 
-class UserRegisterSerializer(serializers.ModelSerializer):
 
+class UserRegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('user_name', 'email', 'password',)
         extra_kwargs = {
-            'password': {'write_only':True},
+            'password': {'write_only': True},
         }
 
     def create(self, validated_data, referrer_code):
@@ -19,12 +19,12 @@ class UserRegisterSerializer(serializers.ModelSerializer):
                 raise "There isn't any user with this referrer code"
 
         else:
-            inviter_id=None
+            inviter_id = None
 
         return User.objects.create_user(user_name=validated_data['user_name'],
-                                        email=validated_data['email'], 
+                                        email=validated_data['email'],
                                         password=validated_data['password'],
-                                        inviter_id=inviter_id,)
+                                        inviter_id=inviter_id, )
 
     def validate_user_name(self, value):
         if value == 'admin':

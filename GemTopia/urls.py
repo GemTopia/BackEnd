@@ -11,5 +11,6 @@ urlpatterns = [
     path('redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
     
     # Apps urls:
-    path("users/", include('users.urls', namespace='users'))
+    path("users/", include('users.urls', namespace='users')),
+    path("game/", include('game.urls', namespace='game')),
 ]
