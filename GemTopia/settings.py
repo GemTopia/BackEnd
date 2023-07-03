@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'game_master.apps.GameMasterConfig',
     'landing.apps.LandingConfig',
     'game.apps.GameConfig',
+    
 ]
 
 REST_FRAMEWORK = {
