@@ -17,4 +17,6 @@ class UserRegistration(APIView):
             return response
 
         return Response(ser_data.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
 

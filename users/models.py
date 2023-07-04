@@ -22,6 +22,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     id = models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')
     user_name = models.CharField(max_length=150, unique=True)
     email = models.EmailField(unique=True)
+    bio = models.TextField(max_length=255, default=user_name, blank=True, null=True)
     inviter = models.ForeignKey('self', on_delete=models.CASCADE, related_name='invited', blank=True, null=True)
     referrer_code = models.CharField(max_length=90, blank=True, null=True)
     avatar = models.ImageField(upload_to=user_avatar_directory_path,
@@ -46,8 +47,21 @@ class User(AbstractBaseUser, PermissionsMixin):
         db_table = 'user'
 
     def __str__(self):
-        return str(self.id)
+        return f'{self.id}-{self.user_name}'
 
     @property
     def is_staff(self):
         return self.is_admin
+
+class Link(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    link = models.URLField()
+    
+    def __str__(self):
+        return f'{self.name} - {self.user.user_name}'
+    
+    
+    
+    
+    
