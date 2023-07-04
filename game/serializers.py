@@ -1,10 +1,10 @@
 from rest_framework import serializers
-from .models import Game, Report, GamePicture
+from .models import Game, Report, GamePicture, Scores, DailyPlayedGame
 
 
 class GameSerializer(serializers.ModelSerializer):
     is_liked_by_user = serializers.SerializerMethodField()
-    like_count = serializers.SerializerMethodField()
+    num_of_like = serializers.SerializerMethodField()
     game_pictures = serializers.SerializerMethodField()
     reports = serializers.SerializerMethodField()
     num_of_report = serializers.SerializerMethodField()
@@ -19,7 +19,7 @@ class GameSerializer(serializers.ModelSerializer):
             return obj.game_like.filter(user=request.user).exists()
         return False
 
-    def get_like_count(self):
+    def get_num_of_like(self):
         return self.game_like.count()
 
     def get_game_pictures(self, obj):
@@ -34,7 +34,19 @@ class GameSerializer(serializers.ModelSerializer):
         return obj.game_reports.count()
 
 
-class ReportSerializer(serializers.Serializer):
+class ReportSerializer(serializers.ModelSerializer):
     class Meta:
         model = Report
+        fields = '__all__'
+
+
+class ScoresSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Scores
+        fields = '__all__'
+
+
+class DailyPlayedGameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DailyPlayedGame
         fields = '__all__'
