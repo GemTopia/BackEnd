@@ -19,16 +19,16 @@ class GameSerializer(serializers.ModelSerializer):
             return obj.game_like.filter(user=request.user).exists()
         return False
 
-    def get_num_of_like(self):
-        return self.game_like.count()
+    def get_num_of_like(self, obj):
+        return obj.game_like.count()
 
     def get_game_pictures(self, obj):
         pictures = obj.game_picture.all()
-        return GamePicture(instance=pictures, many=True).data
+        return GamePictureSerializer(instance=pictures, many=True).data
 
     def get_reports(self, obj):
         reports = obj.game_reports.all()
-        return Report(instance=reports, many=True).data
+        return ReportSerializer(instance=reports, many=True).data
 
     def get_num_of_report(self, obj):
         return obj.game_reports.count()
@@ -47,6 +47,14 @@ class ScoresSerializer(serializers.ModelSerializer):
 
 
 class DailyPlayedGameSerializer(serializers.ModelSerializer):
+    gemyto = serializers.IntegerField(default=0)
+
     class Meta:
         model = DailyPlayedGame
+        fields = ('game', 'user', 'score','gemyto')
+
+
+class GamePictureSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GamePicture
         fields = '__all__'
