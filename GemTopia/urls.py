@@ -12,5 +12,7 @@ urlpatterns = [
     
     # Apps urls:
     path("users/", include('users.urls', namespace='users')),
-    path("wallet/", include('wallet.urls', namespace='wallets'))
+    path("wallet/", include('wallet.urls', namespace='wallets')),
+    path("", include('landing.urls', namespace='landing_page')),
+
 ]

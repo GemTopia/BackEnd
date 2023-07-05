@@ -25,5 +25,8 @@ class TransactionSerializer(serializers.ModelSerializer):
         model = Transaction
         fields = ('wallet_id','value')
 
+        def create(self,validated_data):
+            return Transaction.objects.create(**validated_data)
+
 
 
