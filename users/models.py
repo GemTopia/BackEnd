@@ -53,13 +53,17 @@ class User(AbstractBaseUser, PermissionsMixin):
     def is_staff(self):
         return self.is_admin
 
-class Link(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+class SocialMedia(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='links')
     name = models.CharField(max_length=100)
     link = models.URLField()
+    created_at = models.DateField(auto_now_add=True)
+    updated_at = models.DateField(auto_now=True)
+    deleted_at = models.DateField(null=True)
     
     def __str__(self):
         return f'{self.name} - {self.user.user_name}'
+
     
     
     
