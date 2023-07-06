@@ -30,7 +30,11 @@ class UserViewSet(viewsets.ViewSet):
     def retrieve(self, request, pk=None):
         user = get_object_or_404(self.queryset, pk=pk)
         ser_data = self.serializer_class(instance=user)
+        if user.played_game:
+            return Response(ser_data.data)
+        ser_data.data.pop('user_games', None)
         return Response(ser_data.data)
+
 
     def partial_update(self, request, pk=None):
         user = get_object_or_404(self.queryset, pk=pk) 

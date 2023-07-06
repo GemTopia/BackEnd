@@ -56,7 +56,7 @@ class UserSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = User
-        fields = ('avatar', 'user_name', 'email', 'bio', 'links', 'user_games')
+        fields = ('avatar', 'user_name', 'email', 'bio', 'links', 'played_game', 'user_games')
         extra_kwargs = {
             'email': {'read_only':True},
         }
@@ -70,6 +70,7 @@ class UserSerializer(serializers.ModelSerializer):
         instance.avatar = validated_data.get('avatar', instance.avatar)
         instance.user_name = validated_data.get('user_name', instance.user_name)
         instance.bio = validated_data.get('bio', instance.bio)
+        instance.played_game = validated_data.get('played_game', instance.played_game)
         instance.save()
         
         if links_data:
