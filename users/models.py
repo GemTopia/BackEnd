@@ -22,7 +22,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     id = models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')
     user_name = models.CharField(max_length=150, unique=True)
     email = models.EmailField(unique=True)
-    bio = models.TextField(max_length=255, default=user_name, blank=True, null=True)
+    bio = models.TextField(max_length=255, blank=True, null=True)
     inviter = models.ForeignKey('self', on_delete=models.CASCADE, related_name='invited', blank=True, null=True)
     referrer_code = models.CharField(max_length=90, blank=True, null=True)
     avatar = models.ImageField(upload_to=user_avatar_directory_path,
@@ -31,6 +31,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     total_gemyto = models.IntegerField(default=0)
     is_active = models.BooleanField(default=True)
     is_admin=models.BooleanField(default=False)
+    played_game = models.BooleanField(default=False)
     created_at = models.DateField(auto_now_add=True)
     updated_at = models.DateField(auto_now=True)
     deleted_at = models.DateField(null=True)
@@ -56,7 +57,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 class SocialMedia(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='links')
     name = models.CharField(max_length=100)
-    link = models.URLField()
+    link = models.URLField(blank=True, null=True)
     created_at = models.DateField(auto_now_add=True)
     updated_at = models.DateField(auto_now=True)
     deleted_at = models.DateField(null=True)

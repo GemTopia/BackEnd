@@ -1,5 +1,7 @@
 from rest_framework import serializers
-from users.models import User
+from users.models import User, SocialMedia
+from game.models import PlayedGame
+
 
 class UserRegisterSerializer(serializers.ModelSerializer):
 
@@ -35,3 +37,47 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         if 'admin' in value:
             raise serializers.ValidationError('admin can not be in email')
         return value
+
+class SocialMediaSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = SocialMedia
+        fields = ('name', 'link')
+        
+class PlayedGameSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = PlayedGame
+        fields = ('game',)
+
+class UserSerializer(serializers.ModelSerializer):
+    links = SocialMediaSerializer(many=True)
+    user_games = PlayedGameSerializer(many=True, read_only=True)
+    
+    class Meta:
+        model = User
+        fields = ('avatar', 'user_name', 'email', 'bio', 'links', 'user_games')
+        extra_kwargs = {
+            'email': {'read_only':True},
+        }
+        
+    def update(self, instance, validated_data):
+        links_data = validated_data.pop('links', None)
+        #     links_data = validated_data.pop('links')
+        # links_data = None
+        
+        #links = list((instance.links).all())
+        instance.avatar = validated_data.get('avatar', instance.avatar)
+        instance.user_name = validated_data.get('user_name', instance.user_name)
+        instance.bio = validated_data.get('bio', instance.bio)
+        instance.save()
+        
+        if links_data:
+            for link_data in links_data:
+                link = SocialMedia.objects.get(pk=link_data['id'])
+                link.name = link_data.get('name', link.name)
+                link.link = link_data.get('link', link.link)
+                link.save()
+        
+            
+        return instance
