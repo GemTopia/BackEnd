@@ -123,7 +123,7 @@ class GamePicture(models.Model):
 class PlayedGame(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_games')
     game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='game_players')
-    game_gemyto = models.PositiveIntegerField(default=0)
+    game_gemyto = models.FloatField(default=0)
     score = models.PositiveIntegerField(default=0)
     created_at = models.DateField(auto_now_add=True)
     updated_at = models.DateField(auto_now=True)
@@ -153,6 +153,7 @@ class DailyPlayedGame(models.Model):
     updated_at = models.DateField(auto_now=True)
     deleted_at = models.DateField(null=True)
     state = models.PositiveIntegerField(choices=STATE_CHOICES, default=0)
+    gemyto = models.FloatField(default=0)
 
     def __str__(self):
         return f'{self.user} played {self.game} daily'
