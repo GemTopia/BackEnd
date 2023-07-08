@@ -1,6 +1,7 @@
 from django.contrib.auth.models import BaseUserManager
 from utils import int_to_unique_string
 
+
 class UserManager(BaseUserManager):
     def create_user(self, user_name, email, password, inviter_id):
         if not user_name:
@@ -11,7 +12,7 @@ class UserManager(BaseUserManager):
 
         if not password:
             raise ValueError("Users must have a password")
-        
+
         user = self.model(
             user_name=user_name,
             email=self.normalize_email(email),
@@ -20,7 +21,7 @@ class UserManager(BaseUserManager):
         )
         user.set_password(password)
         user.save(using=self._db)
-        user.referrer_code=int_to_unique_string(user.id)
+        user.referrer_code = int_to_unique_string(user.id)
         user.save(using=self._db)
         return user
 
