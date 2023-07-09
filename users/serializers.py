@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from users.models import User, SocialMedia
 from game.models import PlayedGame
+from game.serializers import DailyPlayedGameSerializer
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):
@@ -42,43 +43,35 @@ class SocialMediaSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = SocialMedia
-        fields = ('name', 'link')
-        
-class PlayedGameSerializer(serializers.ModelSerializer):
-    
-    class Meta:
-        model = PlayedGame
-        fields = ('game',)
+        fields = ('name', 'link','user_id')
 
+    social_apps=['telegram','instagram','youtube','twitch','discord','steam']
+    name=serializers.ChoiceField(choices=social_apps)
+
+    
+    def update(self, instance, validated_data):
+        instance.link = validated_data.get('link', instance.link)
+        instance.save()
+        return instance 
+
+        
+        
 class UserSerializer(serializers.ModelSerializer):
     links = SocialMediaSerializer(many=True)
-    user_games = PlayedGameSerializer(many=True, read_only=True)
+    user_games = DailyPlayedGameSerializer(many=True, read_only=True)
     
     class Meta:
         model = User
-        fields = ('avatar', 'user_name', 'email', 'bio', 'links', 'played_game', 'user_games')
+        fields = ('avatar', 'user_name', 'email', 'bio', 'links', 'hide_button','referrer_code','user_games')
         extra_kwargs = {
             'email': {'read_only':True},
         }
         
-    def update(self, instance, validated_data):
-        links_data = validated_data.pop('links', None)
-        #     links_data = validated_data.pop('links')
-        # links_data = None
         
-        #links = list((instance.links).all())
+    def update(self, instance, validated_data):
         instance.avatar = validated_data.get('avatar', instance.avatar)
         instance.user_name = validated_data.get('user_name', instance.user_name)
         instance.bio = validated_data.get('bio', instance.bio)
-        instance.played_game = validated_data.get('played_game', instance.played_game)
+        instance.hide_button = validated_data.get('hide_button', instance.hide_button)
         instance.save()
-        
-        if links_data:
-            for link_data in links_data:
-                link = SocialMedia.objects.get(pk=link_data['id'])
-                link.name = link_data.get('name', link.name)
-                link.link = link_data.get('link', link.link)
-                link.save()
-        
-            
         return instance

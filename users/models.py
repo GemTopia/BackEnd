@@ -31,7 +31,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     total_gemyto = models.IntegerField(default=0)
     is_active = models.BooleanField(default=True)
     is_admin=models.BooleanField(default=False)
-    played_game = models.BooleanField(default=False)
+    hide_button = models.BooleanField(default=False)
     created_at = models.DateField(auto_now_add=True)
     updated_at = models.DateField(auto_now=True)
     deleted_at = models.DateField(null=True)
@@ -57,11 +57,14 @@ class User(AbstractBaseUser, PermissionsMixin):
 class SocialMedia(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='links')
     name = models.CharField(max_length=100)
-    link = models.URLField(blank=True, null=True)
+    link = models.CharField(max_length=200,blank=True, null=True)
     created_at = models.DateField(auto_now_add=True)
     updated_at = models.DateField(auto_now=True)
-    deleted_at = models.DateField(null=True)
-    
+    class Meta:
+        ordering = ['created_at']
+        db_table = 'social_media'
+
+        
     def __str__(self):
         return f'{self.name} - {self.user.user_name}'
 
