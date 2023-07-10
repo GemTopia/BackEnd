@@ -75,3 +75,24 @@ class UserSerializer(serializers.ModelSerializer):
         instance.hide_button = validated_data.get('hide_button', instance.hide_button)
         instance.save()
         return instance
+    
+class ChangePasswordSerializer(serializers.Serializer):
+    old_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
+    
+    def validate_old_password(self, value):
+        user = self.context['request'].user
+        if not user.check_password(value):
+            raise serializers.ValidationError('Your old password is incorrect')
+        return value
+    
+    def validate(self, data):
+        if data['old_password'] == data['new_password']:
+            raise serializers.ValidationError({'error': 'Both old and new passwords are the same'})
+        return data
+        
+    def save(self, **kwargs):
+        user = self.context['request'].user
+        user.set_password(self.validated_data['new_password'])
+        user.save()
+        return user

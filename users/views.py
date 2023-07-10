@@ -1,17 +1,18 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from users.serializers import UserRegisterSerializer, UserSerializer, SocialMediaSerializer
+from users.serializers import UserRegisterSerializer, UserSerializer, SocialMediaSerializer, ChangePasswordSerializer
 from rest_framework import status
 from rest_framework_simplejwt.views import TokenObtainPairView
 from users.models import User,SocialMedia
 from utils import is_profile_url
+from rest_framework.permissions import IsAuthenticated   
 
 
 class UserRegistration(APIView):
     def post(self, request):
         ser_data = UserRegisterSerializer(data=request.POST)
         
-        if ser_data.is_valid():
+        if ser_data.is_valid(raise_exception=True):
             ser_data.create(ser_data.validated_data, request.POST['referrer_code'])
             
             data = {'email': request.data['email'], 'password': request.data['password']}
@@ -86,6 +87,17 @@ class LinkView(APIView):
         if error:
             for i in error:
                 error_text+=i+","
-            return Response({"status":"the url of "+error_text+" is wrong"})
+            return Response({"status":"The url of "+error_text+" is wrong"})
         else:
             return Response({"status":status.HTTP_200_OK})
+        
+class ChangePasswordView(APIView):
+    permission_classes = (IsAuthenticated,)
+    
+    def post(self, request, *args, **kwargs):
+        ser_data = ChangePasswordSerializer(data=request.data, context={'request': request})
+        if ser_data.is_valid(raise_exception=True):
+            ser_data.save()
+            return Response('Password updated successfully', status=status.HTTP_200_OK)
+        
+        return Response(ser_data.errors, status=status.HTTP_400_BAD_REQUEST)
