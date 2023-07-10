@@ -1,16 +1,10 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from users.serializers import UserRegisterSerializer, UserSerializer,SocialMediaSerializer
+from users.serializers import UserRegisterSerializer, UserSerializer, SocialMediaSerializer
 from rest_framework import status
 from rest_framework_simplejwt.views import TokenObtainPairView
-from rest_framework import viewsets
 from users.models import User,SocialMedia
-from django.shortcuts import get_object_or_404
-from game.models import PlayedGame
-from game.serializers import DailyPlayedGameSerializer
-from rest_framework import viewsets
-import re
-
+from utils import is_profile_url
 
 
 class UserRegistration(APIView):
@@ -35,7 +29,7 @@ class ProfileView(APIView):
         user=request.user
         wnated_user = User.objects.get(user_name=request.GET.get('user',''))
         if wnated_user:
-            if user==wnated_user:
+            if user == wnated_user:
                 ser_data = self.serializer_class(instance=wnated_user)
                 
                 return Response(ser_data.data)
@@ -48,11 +42,11 @@ class ProfileView(APIView):
                 if not wnated_user.hide_button:
                     return Response(copy_of_data)
                 else:
-                    a.pop('user_games')
+                    copy_of_data.pop('user_games')
                     return Response(copy_of_data)
-        return Response('there is not any user whit this user_name')
+        return Response('There is not any user with this username')
 
-    def put(self, request ):
+    def put(self, request):
         user = request.user
         ser_data = UserSerializer(instance=user, data=request.data, partial=True)
         if ser_data.is_valid():
@@ -61,40 +55,20 @@ class ProfileView(APIView):
         return Response(ser_data.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-
-        
-
-def is_profile_url(url, platform):
-    if platform == 'instagram':
-        pattern = r'^https?://(www\.)?instagram\.com/([a-zA-Z0-9_]+)$'
-    elif platform == 'telegram':
-        pattern = r'^https?://(www\.)?t\.me/([a-zA-Z0-9_]+)$'
-    elif platform == 'twitch':
-        pattern = r'^https?://(www\.)?twitch\.tv/([a-zA-Z0-9_]+)$'
-    elif platform == 'discord':
-        pattern = r'^https?://(www\.)?discord(app)?\.com/users/([0-9]+)$'
-    elif platform == 'youtube':
-        pattern = r'^https?://(www\.)?youtube\.com/(user/|channel/)([a-zA-Z0-9_\-]+)$'
-    elif platform == 'steam':
-        pattern = r'^https?://(www\.)?steamcommunity\.com/(id|profiles)/([a-zA-Z0-9_]+)$'
-    else:
-        return False
-    return re.match(pattern, url) is not None
-
 class LinkView(APIView):
 
     def put(self, request):
 
-        socials=["telegram","instagram","twitch","steam","youtube","discord"]
+        socials=["telegram", "instagram", "twitch", "steam", "youtube", "discord"]
         userID = request.user
         error=[]
         
         for i in socials:
             data={'name':i,"link":request.data.get(i)}
-            if (request.data.get(i) and is_profile_url(request.data.get(i),i)) or not request.data.get(i):
-                if SocialMedia.objects.filter(user=userID,name=i).exists():
-                    instanc=SocialMedia.objects.get(user=userID,name=i)
-                    ser_data = SocialMediaSerializer(instance=instanc,data=data, partial=True)
+            if (request.data.get(i) and is_profile_url(request.data.get(i), i)) or not request.data.get(i):
+                if SocialMedia.objects.filter(user=userID, name=i).exists():
+                    instance=SocialMedia.objects.get(user=userID, name=i)
+                    ser_data = SocialMediaSerializer(instance=instance, data=data, partial=True)
                     if ser_data.is_valid():
                         ser_data.save()
                     else:
@@ -114,4 +88,4 @@ class LinkView(APIView):
                 error_text+=i+","
             return Response({"status":"the url of "+error_text+" is wrong"})
         else:
-            return Response({"status":"done"})
+            return Response({"status":status.HTTP_200_OK})
