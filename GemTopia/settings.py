@@ -38,8 +38,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'drf_spectacular',
-    'django_apscheduler',
-    # 'background_task',
+    'django_cron',
 
     # Local apps
     'home.apps.HomeConfig',
