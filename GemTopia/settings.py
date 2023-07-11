@@ -38,7 +38,9 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'drf_spectacular',
-    
+    'django_apscheduler',
+    # 'background_task',
+
     # Local apps
     'home.apps.HomeConfig',
     'users.apps.UsersConfig',
@@ -47,7 +49,8 @@ INSTALLED_APPS = [
     'landing.apps.LandingConfig',
     'game.apps.GameConfig',
 ]
-
+# APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
+# APSCHEDULER_RUN_NOW_TIMEOUT = 25
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -55,7 +58,12 @@ REST_FRAMEWORK = {
     
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
-
+AP_SCHEDULER_JOBSTORES = {
+    'default': {
+        'type': 'django',
+        'model': 'django_apscheduler.models DjangoJobStore'
+    },
+}
 SPECTACULAR_SETTINGS = {
     'TITLE': 'GemTopia API',
     'DESCRIPTION': '',
