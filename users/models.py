@@ -1,14 +1,14 @@
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.db import models
 from django.contrib.auth.models import PermissionsMixin
-from django.conf import settings
+from GemTopia import settings
 from django.core.validators import ValidationError, FileExtensionValidator
 from django.template.defaultfilters import filesizeformat
 from users.managers import UserManager
 
 
 def user_avatar_directory_path(instance, filename):
-    return 'user/{0}/avatar/{1}'.format(str(instance.user_name), filename)
+    return 'users/{0}/avatar/{1}'.format(str(instance.user_name), filename)
 
 
 def validate_image_size(image):
@@ -28,8 +28,10 @@ class User(AbstractBaseUser, PermissionsMixin):
                                validators=[FileExtensionValidator(VALID_AVATAR_EXTENSION), validate_image_size],
                                blank=True, null=True)
     total_gemyto = models.IntegerField(default=0)
+    gemyto=models.IntegerField(default=0)
+    status=models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
-    is_admin=models.BooleanField(default=False)
+    is_admin = models.BooleanField(default=False)
     created_at = models.DateField(auto_now_add=True)
     updated_at = models.DateField(auto_now=True)
     deleted_at = models.DateField(null=True)
