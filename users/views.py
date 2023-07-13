@@ -8,16 +8,12 @@ from utils import is_profile_url
 from rest_framework.permissions import IsAuthenticated
 
 
-
 class UserRegistration(APIView):
     serializer_class = UserRegisterSerializer
 
     def post(self, request):
-<<<<<<< HEAD
         request.body
-=======
-        print(request.body)
->>>>>>> main
+
         ser_data = self.serializer_class(data=request.data)
         if ser_data.is_valid():
             ser_data.create(validated_data=ser_data.validated_data, referrer_code=request.data.get('referrer_code'))
@@ -26,7 +22,6 @@ class UserRegistration(APIView):
             return response
 
         return Response(ser_data.errors, status=status.HTTP_400_BAD_REQUEST)
-<<<<<<< HEAD
 
 
 class ProfileView(APIView):
@@ -110,7 +105,3 @@ class ChangePasswordView(APIView):
             return Response('Password updated successfully', status=status.HTTP_200_OK)
 
         return Response(ser_data.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-=======
->>>>>>> main
