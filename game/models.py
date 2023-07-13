@@ -47,7 +47,6 @@ class Game(models.Model):
         self.num_of_users_get_gemyto = math.ceil(
             (num_of_total_games - game_rank) * totalN / (num_of_total_games * (num_of_total_games + 1)))
 
-
     def modify_num_of_users_get_gemyto(self):
         N = 20
         game_rank = Game.objects.filter(num_of_like__gt=self.num_of_like).aggregate(rank=Count('num_of_like'))[
@@ -141,7 +140,6 @@ class PlayedGame(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True)
 
-
     def __str__(self):
         return f'{self.user} played {self.game}'
 
@@ -179,4 +177,3 @@ class DailyPlayedGame(models.Model):
         verbose_name_plural = 'daily played games'
 
         db_table = 'daily_played_game'
-

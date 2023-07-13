@@ -4,12 +4,12 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, Spec
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    
+
     # Swagger & Redoc UI:
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('swagger/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger'),
     path('redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
-    
+
     # Apps urls:
     path("users/", include('users.urls', namespace='users')),
     path('password_reset/', include('django_rest_passwordreset.urls', namespace='password_reset')),
