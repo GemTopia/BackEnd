@@ -33,9 +33,24 @@ class Game(models.Model):
                                     blank=True, null=True)
 
     num_of_users_get_gemyto = models.PositiveIntegerField(default=20)
+<<<<<<< HEAD
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True)
+
+    def modify_num_of_users_get_gemyto(self):
+        N = 20
+        game_rank = Game.objects.filter(num_of_like__gt=self.num_of_like).aggregate(rank=Count('num_of_like'))[
+                        'rank'] + 1
+        num_of_total_games = Game.objects.count()
+        totalN = num_of_total_games * N;
+        self.num_of_users_get_gemyto = math.ceil(
+            (num_of_total_games - game_rank) * totalN / (num_of_total_games * (num_of_total_games + 1)))
+=======
+    created_at = models.DateField(auto_now_add=True)
+    updated_at = models.DateField(auto_now=True)
+    deleted_at = models.DateField(null=True)
+>>>>>>> main
 
     def modify_num_of_users_get_gemyto(self):
         N = 20
@@ -125,9 +140,15 @@ class PlayedGame(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='game_players')
     game_gemyto = models.FloatField(default=0)
     score = models.PositiveIntegerField(default=0)
+<<<<<<< HEAD
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True)
+=======
+    created_at = models.DateField(auto_now_add=True)
+    updated_at = models.DateField(auto_now=True)
+    deleted_at = models.DateField(null=True)
+>>>>>>> main
 
     def __str__(self):
         return f'{self.user} played {self.game}'
@@ -149,9 +170,15 @@ class DailyPlayedGame(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_daily_games')
     game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='game_daily_players')
     score = models.PositiveIntegerField(default=0)
+<<<<<<< HEAD
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True)
+=======
+    created_at = models.DateField(auto_now_add=True)
+    updated_at = models.DateField(auto_now=True)
+    deleted_at = models.DateField(null=True)
+>>>>>>> main
     state = models.PositiveIntegerField(choices=STATE_CHOICES, default=0)
     gemyto = models.FloatField(default=0)
 
@@ -162,4 +189,8 @@ class DailyPlayedGame(models.Model):
         ordering = ['score']
         verbose_name = ' daily  played game'
         verbose_name_plural = 'daily played games'
+<<<<<<< HEAD
         db_table = 'daily_played_game'
+=======
+        db_table = 'daily_played_game'
+>>>>>>> main

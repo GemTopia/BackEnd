@@ -6,21 +6,25 @@ from rest_framework import serializers
 from django_rest_passwordreset.serializers import PasswordTokenSerializer
 
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> main
 class UserRegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('user_name', 'email', 'password',)
+        fields = ('user_name', 'email', 'password', 'total_gemyto')
         extra_kwargs = {
             'password': {'write_only': True},
         }
 
-    def create(self, validated_data, referrer_code):
+    def create(self, validated_data, referrer_code=None):
         if referrer_code:
             inviter_id = User.objects.filter(referrer_code=referrer_code).values_list('id', flat=True).first()
             if inviter_id is not None:
                 inviter_id = int(inviter_id)
             else:
-                raise "There isn't any user with this referrer code"
+                raise serializers.ValidationError("There isn't any user with this referrer code")
 
         else:
             inviter_id = None
