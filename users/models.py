@@ -28,13 +28,14 @@ class User(AbstractBaseUser, PermissionsMixin):
     avatar = models.ImageField(upload_to=user_avatar_directory_path,
                                validators=[FileExtensionValidator(VALID_AVATAR_EXTENSION), validate_image_size],
                                blank=True, null=True)
-    total_gemyto = models.IntegerField(default=0)
+    total_gemyto = models.FloatField(default=0)
+    gemyto=models.FloatField(default=0)
     is_active = models.BooleanField(default=True)
-    is_admin=models.BooleanField(default=False)
+    is_admin = models.BooleanField(default=False)
     hide_button = models.BooleanField(default=False)
-    created_at = models.DateField(auto_now_add=True)
-    updated_at = models.DateField(auto_now=True)
-    deleted_at = models.DateField(null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    deleted_at = models.DateTimeField(null=True)
 
     objects = UserManager()
 
@@ -54,22 +55,17 @@ class User(AbstractBaseUser, PermissionsMixin):
     def is_staff(self):
         return self.is_admin
 
+
 class SocialMedia(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='links')
     name = models.CharField(max_length=100)
-    link = models.CharField(max_length=200,blank=True, null=True)
-    created_at = models.DateField(auto_now_add=True)
-    updated_at = models.DateField(auto_now=True)
+    link = models.CharField(max_length=200, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
     class Meta:
         ordering = ['created_at']
         db_table = 'social_media'
 
-        
     def __str__(self):
         return f'{self.name} - {self.user.user_name}'
-
-    
-    
-    
-    
-    

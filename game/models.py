@@ -1,8 +1,15 @@
 from django.db import models
+from GemTopia import settings
 from users.models import User
 from game_master.models import GameMaster
+from django.template.defaultfilters import filesizeformat
 from django.core.validators import ValidationError, FileExtensionValidator
-from GemTopia import settings
+import math
+from django.db.models import Count
+
+
+def game_picture_directory_path(instance, filename):
+    return 'game/{0}/picture/{1}'.format(str(instance.game.name), filename)
 
 
 def validate_image_size(image):
@@ -10,8 +17,6 @@ def validate_image_size(image):
     if filesize > int(settings.MAX_UPLOAD_IMAGE_SIZE):
         raise ValidationError('Max image size should be '.format((filesizeformat(settings.MAX_UPLOAD_IMAGE_SIZE))))
 
-def game_picture_directory_path(instance, filename):
-    return 'game/{0}/picture/{1}'.format(str(instance.game.name), filename)
 
 class Game(models.Model):
     VALID_AVATAR_EXTENSION = ['png', 'jpg', 'jpeg']
@@ -28,9 +33,9 @@ class Game(models.Model):
                                     blank=True, null=True)
 
     num_of_users_get_gemyto = models.PositiveIntegerField(default=20)
-    created_at = models.DateField(auto_now_add=True)
-    updated_at = models.DateField(auto_now=True)
-    deleted_at = models.DateField(null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    deleted_at = models.DateTimeField(null=True)
 
     def modify_num_of_users_get_gemyto(self):
         N = 20
@@ -41,7 +46,7 @@ class Game(models.Model):
         self.num_of_users_get_gemyto = math.ceil(
             (num_of_total_games - game_rank) * totalN / (num_of_total_games * (num_of_total_games + 1)))
 
-    def str(self):
+    def __str__(self):
         return self.name
 
     class Meta:
@@ -49,48 +54,31 @@ class Game(models.Model):
         db_table = 'game'
 
 
-class PlayedGame(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_games')
-    game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='game_players')
-    game_gemyto = models.PositiveIntegerField(default=0)
-    score = models.PositiveIntegerField(default=0)
-    created_at = models.DateField(auto_now_add=True)
-    updated_at = models.DateField(auto_now=True)
-    deleted_at = models.DateField(null=True)
+class Scores(models.Model):
+    game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='game_scores')
+    max_value = models.PositiveIntegerField(default=0)
+    first_level_score = models.PositiveIntegerField(default=0, null=True, blank=True)
+    second_level_score = models.PositiveIntegerField(default=0, null=True, blank=True)
+    third_level_score = models.PositiveIntegerField(default=0, null=True, blank=True)
+    fourth_level_score = models.PositiveIntegerField(default=0, null=True, blank=True)
+    distance = models.PositiveIntegerField(default=0, null=True, blank=True)
 
-    def str(self):
-        return f'{self.user} played {self.game}'
+    def modify_scores(self):
+        self.distance = math.log(self.max_value, 2)
+        self.first_level_score = 2 ** (self.distance / 4)
+        self.second_level_score = 2 ** ((2 * self.distance) / 4)
+        self.third_level_score = 2 ** ((3 * self.distance) / 4)
+        self.fourth_level_score = self.max_value
 
-    class Meta:
-        ordering = ['score']
-        verbose_name = 'played game'
-        verbose_name_plural = 'played games'
-        db_table = 'played_game'
+    def save(self, *args, **kwargs):
+        self.modify_scores()
+        super().save(*args, **kwargs)
 
-class DailyPlayedGame(models.Model):
-    STATE_CHOICES = (
-        (1, 'State 1'),
-        (2, 'State 2'),
-        (3, 'State 3'),
-        (4, 'State 4'),
-    )
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_daily_games')
-    game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='game_daily_players')
-    score = models.PositiveIntegerField(default=0)
-    created_at = models.DateField(auto_now_add=True)
-    updated_at = models.DateField(auto_now=True)
-    deleted_at = models.DateField(null=True)
-    state = models.PositiveIntegerField(choices=STATE_CHOICES, default=0)
-
-    def str(self):
-        return f'{self.user} played {self.game} daily'
+    def __str__(self):
+        return f'{self.game.name}-{self.max_value}'
 
     class Meta:
-        ordering = ['score']
-        verbose_name = ' daily played game'
-        verbose_name_plural = 'daily played games'
-        db_table = 'daily_played_game'
-
+        db_table = 'scores'
 
 
 class Report(models.Model):
@@ -98,9 +86,9 @@ class Report(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='game_reports')
     report_text = models.TextField()
     validate = models.BooleanField(default=False)
-    created_at = models.DateField(auto_now_add=True)
-    updated_at = models.DateField(auto_now=True)
-    deleted_at = models.DateField(null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    deleted_at = models.DateTimeField(null=True)
 
     def __str__(self):
         return self.report_text
@@ -113,8 +101,8 @@ class Report(models.Model):
 class Like(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_like')
     game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='game_like')
-    created_at = models.DateField(auto_now_add=True)
-    deleted_at = models.DateField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    deleted_at = models.DateTimeField()
 
     def __str__(self):
         return f'{self.user} liked {self.game}'
@@ -131,3 +119,47 @@ class GamePicture(models.Model):
     class Meta:
         db_table = 'game_picture'
 
+
+class PlayedGame(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_games')
+    game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='game_players')
+    game_gemyto = models.FloatField(default=0)
+    score = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    deleted_at = models.DateTimeField(null=True)
+
+    def __str__(self):
+        return f'{self.user} played {self.game}'
+
+    class Meta:
+        ordering = ['score']
+        verbose_name = 'played game'
+        verbose_name_plural = 'played games'
+        db_table = 'played_game'
+
+
+class DailyPlayedGame(models.Model):
+    STATE_CHOICES = (
+        (1, 'State 1'),
+        (2, 'State 2'),
+        (3, 'State 3'),
+        (4, 'State 4'),
+    )
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_daily_games')
+    game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='game_daily_players')
+    score = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    deleted_at = models.DateTimeField(null=True)
+    state = models.PositiveIntegerField(choices=STATE_CHOICES, default=0)
+    gemyto = models.FloatField(default=0)
+
+    def __str__(self):
+        return f'{self.user} played {self.game} daily'
+
+    class Meta:
+        ordering = ['score']
+        verbose_name = ' daily  played game'
+        verbose_name_plural = 'daily played games'
+        db_table = 'daily_played_game'
