@@ -6,10 +6,6 @@ from rest_framework import serializers
 from django_rest_passwordreset.serializers import PasswordTokenSerializer
 
 
-<<<<<<< HEAD
-=======
-
->>>>>>> main
 class UserRegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User

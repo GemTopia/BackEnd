@@ -35,7 +35,6 @@ class UserAdmin(BaseUserAdmin):
 
 
 admin.site.register(User, UserAdmin)
-<<<<<<< HEAD
+
 admin.site.register(SocialMedia)
-=======
->>>>>>> main
+
