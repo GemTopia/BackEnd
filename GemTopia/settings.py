@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'django_rest_passwordreset',
     'drf_spectacular',
+    'django_cron',
 
     # Local apps
     'home.apps.HomeConfig',
@@ -50,6 +51,7 @@ INSTALLED_APPS = [
 ]
 # APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
 # APSCHEDULER_RUN_NOW_TIMEOUT = 25
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -161,3 +163,7 @@ AUTH_USER_MODEL = 'users.User'
 
 # 400 KB
 MAX_UPLOAD_IMAGE_SIZE = '419430'
+
+# CRONJOBS = [
+#     ('* * * * *', 'home.scheduler.DailyTaskCronJob'),
+# ]

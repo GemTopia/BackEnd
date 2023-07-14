@@ -78,14 +78,14 @@ class UserSerializer(serializers.ModelSerializer):
 class UserRankSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('avatar', 'user_name', 'total_gemyto','hide_button')
+        fields = ('avatar', 'user_name', 'total_gemyto', 'hide_button')
 
-        def to_representation(self, instance):
-            representation = super().to_representation(instance)
-            hide_button = representation.get('hide_button')
-            if hide_button:
-                representation.pop('total_gemyto', None)
-            return representation
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        hide_button = representation.get('hide_button')
+        if hide_button:
+            representation.pop('total_gemyto')
+        return representation
 
 
 class ChangePasswordSerializer(serializers.Serializer):

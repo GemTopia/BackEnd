@@ -5,7 +5,7 @@ from users.models import User
 
 
 class DailyTaskCronJob(CronJobBase):
-    RUN_AT_TIMES = ['12:00']  # Run at 12:00 GMT
+    RUN_AT_TIMES = ['19:35']  # Run at 12:00 GMT
 
     schedule = Schedule(run_at_times=RUN_AT_TIMES)
     code = 'your_app.daily_task_cron_job'  # Change 'your_app' to your app's name
