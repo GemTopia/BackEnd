@@ -14,10 +14,18 @@ class HomeView(APIView):
         'ranking_games': GameSerializer,
         'top_players': UserRankSerializer,
         'all_players': UserRankSerializer,
+        'user_profile': UserRankSerializer,
     }
 
     def get(self, request):
         user = request.user
+        user_profile=User.objects.get(user_name=user.user_name)
+        user_profile_serializer = UserRankSerializer(instance=user_profile,many=False)
+        copy_of_data = user_profile_serializer.data
+        copy_of_data.pop('total_gemyto')
+        copy_of_data.pop('hide_button')
+        copy_of_data.pop('avatar')
+
         played_games = PlayedGame.objects.filter(user=user).order_by('updated_at')
         daily_played_games = DailyPlayedGame.objects.filter(user=user).order_by('updated_at')
         recent_games_played = [played_game.game for played_game in played_games]
@@ -34,7 +42,7 @@ class HomeView(APIView):
         top_players = all_players.filter(hide_button=False).order_by('total_gemyto')[:20]
         top_players_serializer = UserRankSerializer(instance=top_players, many=True)
 
-        for player_data in all_players_serializer.data :
+        for player_data in all_players_serializer.data:
             if player_data not in top_players_serializer.data and player_data['hide_button'] is False:
                 player_data.pop('total_gemyto')
 
@@ -43,6 +51,7 @@ class HomeView(APIView):
             'ranking_games': ranking_games_serializer.data,
             'top_players': top_players_serializer.data,
             'all_players': all_players_serializer.data,
+            'user_profile': copy_of_data,
         }
 
         return Response(serialized_data)
