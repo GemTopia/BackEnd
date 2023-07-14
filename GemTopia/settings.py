@@ -37,8 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework_simplejwt',
+    'django_rest_passwordreset',
     'drf_spectacular',
-    'django_cron',
 
     # Local apps
     'home.apps.HomeConfig',
