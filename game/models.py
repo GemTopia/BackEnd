@@ -47,15 +47,6 @@ class Game(models.Model):
         self.num_of_users_get_gemyto = math.ceil(
             (num_of_total_games - game_rank) * totalN / (num_of_total_games * (num_of_total_games + 1)))
 
-    def modify_num_of_users_get_gemyto(self):
-        N = 20
-        game_rank = Game.objects.filter(num_of_like__gt=self.num_of_like).aggregate(rank=Count('num_of_like'))[
-                        'rank'] + 1
-        num_of_total_games = Game.objects.count()
-        totalN = num_of_total_games * N;
-        self.num_of_users_get_gemyto = math.ceil(
-            (num_of_total_games - game_rank) * totalN / (num_of_total_games * (num_of_total_games + 1)))
-
     def __str__(self):
         return self.name
 

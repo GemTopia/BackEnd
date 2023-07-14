@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'django_rest_passwordreset',
     'drf_spectacular',
-    
+    'corsheaders',
+
     # Local apps
     'home.apps.HomeConfig',
     'users.apps.UsersConfig',
@@ -157,6 +158,7 @@ AUTH_USER_MODEL = 'users.User'
 
 # 400 KB
 MAX_UPLOAD_IMAGE_SIZE = '419430'
+
 
 # Email Configs:
 import email_conf

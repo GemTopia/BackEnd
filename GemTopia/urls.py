@@ -12,5 +12,9 @@ urlpatterns = [
 
     # Apps urls:
     path("users/", include('users.urls', namespace='users')),
+    path("game/", include('game.urls', namespace='game')),
+    path("home/", include('home.urls', namespace='home')),
     path('password_reset/', include('django_rest_passwordreset.urls', namespace='password_reset')),
 ]
+
+

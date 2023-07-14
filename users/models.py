@@ -29,7 +29,7 @@ class User(AbstractBaseUser, PermissionsMixin):
                                validators=[FileExtensionValidator(VALID_AVATAR_EXTENSION), validate_image_size],
                                blank=True, null=True)
     total_gemyto = models.FloatField(default=0)
-    gemyto=models.FloatField(default=0)
+    gemyto = models.FloatField(default=0)
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
     hide_button = models.BooleanField(default=False)

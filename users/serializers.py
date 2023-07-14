@@ -9,7 +9,9 @@ from django_rest_passwordreset.serializers import PasswordTokenSerializer
 class UserRegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('user_name', 'email', 'password', 'total_gemyto')
+
+        fields = ('user_name', 'email', 'password')
+
         extra_kwargs = {
             'password': {'write_only': True},
         }
@@ -73,6 +75,19 @@ class UserSerializer(serializers.ModelSerializer):
         instance.hide_button = validated_data.get('hide_button', instance.hide_button)
         instance.save()
         return instance
+
+
+class UserRankSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('avatar', 'user_name', 'total_gemyto', 'hide_button')
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        hide_button = representation.get('hide_button')
+        if hide_button:
+            representation.pop('total_gemyto')
+        return representation
 
 
 class ChangePasswordSerializer(serializers.Serializer):
