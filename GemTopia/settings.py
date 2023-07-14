@@ -159,7 +159,6 @@ AUTH_USER_MODEL = 'users.User'
 # 400 KB
 MAX_UPLOAD_IMAGE_SIZE = '419430'
 
-
 # Email Configs:
 import email_conf
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
