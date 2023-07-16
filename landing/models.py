@@ -6,3 +6,10 @@ class GemytoInfo(models.Model):
 
     class Meta:
         db_table = 'gemyto_info'
+
+
+class News(models.Model):
+    email = models.EmailField()
+
+    class Meta:
+        db_table = 'news'
