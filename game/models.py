@@ -1,11 +1,11 @@
+from django.core.validators import ValidationError, FileExtensionValidator
+from django.template.defaultfilters import filesizeformat
+from game_master.models import GameMaster
+from django.db.models import Count
 from django.db import models
 from GemTopia import settings
 from users.models import User
-from game_master.models import GameMaster
-from django.template.defaultfilters import filesizeformat
-from django.core.validators import ValidationError, FileExtensionValidator
 import math
-from django.db.models import Count
 
 
 def game_picture_directory_path(instance, filename):
@@ -16,6 +16,39 @@ def validate_image_size(image):
     filesize = image.size
     if filesize > int(settings.MAX_UPLOAD_IMAGE_SIZE):
         raise ValidationError('Max image size should be '.format((filesizeformat(settings.MAX_UPLOAD_IMAGE_SIZE))))
+
+
+class Scores(models.Model):
+    max_value = models.PositiveIntegerField(default=0)
+    first_level_score = models.PositiveIntegerField(default=0, null=True, blank=True)
+    second_level_score = models.PositiveIntegerField(default=0, null=True, blank=True)
+    third_level_score = models.PositiveIntegerField(default=0, null=True, blank=True)
+    fourth_level_score = models.PositiveIntegerField(default=0, null=True, blank=True)
+    distance = models.PositiveIntegerField(default=0, null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        self.modify_scores()
+        super().save(*args, **kwargs)
+
+    def modify_scores(self):
+        if self.max_value <= 0:
+            self.distance = 0
+        else:
+            self.distance = math.log(self.max_value, 2)
+        self.first_level_score = 2 ** (self.distance / 4)
+        self.second_level_score = 2 ** ((2 * self.distance) / 4)
+        self.third_level_score = 2 ** ((3 * self.distance) / 4)
+        self.fourth_level_score = self.max_value
+
+    def save(self, *args, **kwargs):
+        self.modify_scores()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f'{self.max_value}'
+
+    class Meta:
+        db_table = 'scores'
 
 
 class Game(models.Model):
@@ -33,9 +66,16 @@ class Game(models.Model):
                                     blank=True, null=True)
 
     num_of_users_get_gemyto = models.PositiveIntegerField(default=20)
-    created_at = models.DateField(auto_now_add=True)
-    updated_at = models.DateField(auto_now=True)
-    deleted_at = models.DateField(null=True)
+    scores = models.ForeignKey(Scores, on_delete=models.CASCADE, related_name='score_game')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    deleted_at = models.DateTimeField(null=True)
+
+    def save(self, *args, **kwargs):
+        if not self.pk:  # Only for new Game objects
+            score = Scores.objects.create(game=self)
+            self.score = score
+        super().save(*args, **kwargs)
 
     def modify_num_of_users_get_gemyto(self):
         N = 20
@@ -54,41 +94,14 @@ class Game(models.Model):
         db_table = 'game'
 
 
-class Scores(models.Model):
-    game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='game_scores')
-    max_value = models.PositiveIntegerField(default=0)
-    first_level_score = models.PositiveIntegerField(default=0, null=True, blank=True)
-    second_level_score = models.PositiveIntegerField(default=0, null=True, blank=True)
-    third_level_score = models.PositiveIntegerField(default=0, null=True, blank=True)
-    fourth_level_score = models.PositiveIntegerField(default=0, null=True, blank=True)
-    distance = models.PositiveIntegerField(default=0, null=True, blank=True)
-
-    def modify_scores(self):
-        self.distance = math.log(self.max_value, 2)
-        self.first_level_score = 2 ** (self.distance / 4)
-        self.second_level_score = 2 ** ((2 * self.distance) / 4)
-        self.third_level_score = 2 ** ((3 * self.distance) / 4)
-        self.fourth_level_score = self.max_value
-
-    def save(self, *args, **kwargs):
-        self.modify_scores()
-        super().save(*args, **kwargs)
-
-    def __str__(self):
-        return f'{self.game.name}-{self.max_value}'
-
-    class Meta:
-        db_table = 'scores'
-
-
 class Report(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_reports')
     game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='game_reports')
     report_text = models.TextField()
     validate = models.BooleanField(default=False)
-    created_at = models.DateField(auto_now_add=True)
-    updated_at = models.DateField(auto_now=True)
-    deleted_at = models.DateField(null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    deleted_at = models.DateTimeField(null=True)
 
     def __str__(self):
         return self.report_text
@@ -101,8 +114,8 @@ class Report(models.Model):
 class Like(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_like')
     game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='game_like')
-    created_at = models.DateField(auto_now_add=True)
-    deleted_at = models.DateField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    deleted_at = models.DateTimeField()
 
     def __str__(self):
         return f'{self.user} liked {self.game}'
@@ -125,9 +138,9 @@ class PlayedGame(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='game_players')
     game_gemyto = models.FloatField(default=0)
     score = models.PositiveIntegerField(default=0)
-    created_at = models.DateField(auto_now_add=True)
-    updated_at = models.DateField(auto_now=True)
-    deleted_at = models.DateField(null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    deleted_at = models.DateTimeField(null=True)
 
     def __str__(self):
         return f'{self.user} played {self.game}'
@@ -149,9 +162,9 @@ class DailyPlayedGame(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_daily_games')
     game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='game_daily_players')
     score = models.PositiveIntegerField(default=0)
-    created_at = models.DateField(auto_now_add=True)
-    updated_at = models.DateField(auto_now=True)
-    deleted_at = models.DateField(null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    deleted_at = models.DateTimeField(null=True)
     state = models.PositiveIntegerField(choices=STATE_CHOICES, default=0)
     gemyto = models.FloatField(default=0)
 

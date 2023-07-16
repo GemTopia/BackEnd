@@ -1,13 +1,12 @@
-from rest_framework import status
-from rest_framework.views import APIView
-from django.shortcuts import get_object_or_404
 from .serializers import GameSerializer, ScoresSerializer, DailyPlayedGameSerializer, ReportSerializer
+from .models import Game, DailyPlayedGame, Report
+from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
-from .models import Game, DailyPlayedGame, Scores, Report
-from rest_framework import viewsets
+from rest_framework.views import APIView
 from django.core.mail import send_mail
+from rest_framework import viewsets
+from rest_framework import status
 from django.conf import settings
-
 
 first_level_token = 0.05 * 10
 second_level_token = 0.15 * 10
@@ -25,7 +24,7 @@ class GameView(APIView):
     def get(self, request, game_id):
         game = get_object_or_404(Game, pk=game_id)
         game_serializer = GameSerializer(instance=game)
-        scores = Scores.objects.get(game=game)
+        scores = game.scores
         score_serializer = ScoresSerializer(instance=scores)
         players_score_list = DailyPlayedGame.objects.order_by('score')
         players_list_serializer = DailyPlayedGameSerializer(instance=players_score_list, many=True)
@@ -42,11 +41,11 @@ class GameResult(APIView):
     serializer_class = DailyPlayedGameSerializer
 
     def post(self, request):
-        result_game = self.serializer_class(data=request.POST)
+        result_game = self.serializer_class(data=request.data)
         result_game.is_valid(raise_exception=True)
         game = result_game.validated_data['game']
         user = result_game.validated_data['user']
-        game_scores = Scores.objects.get(game=game)
+        game_scores = game.scores
 
         if DailyPlayedGame.objects.filter(game=game, user=user).exists():
             daily_played = DailyPlayedGame.objects.get(game=game, user=user)
@@ -82,7 +81,7 @@ class GameResult(APIView):
             return Response(result_game.data, status=status.HTTP_200_OK)
         else:
             if result_game.is_valid():
-                if result_game.validated_data['score'] > level_scores.get(0):
+                if result_game.validated_data['score'] > game_scores.first_level_score:
                     result_game.validated_data['gemyto'] = 0.5
                     result_game.validated_data['state'] = 1
                 result_game.save()

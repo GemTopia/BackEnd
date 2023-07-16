@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm
+from game.models import Game, Scores, PlayedGame, DailyPlayedGame
 from users.models import User
 
 
@@ -35,3 +36,7 @@ class UserAdmin(BaseUserAdmin):
 
 
 admin.site.register(User, UserAdmin)
+admin.site.register(PlayedGame)
+admin.site.register(Game)
+admin.site.register(Scores)
+admin.site.register(DailyPlayedGame)
