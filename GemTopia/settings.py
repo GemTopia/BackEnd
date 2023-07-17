@@ -37,8 +37,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework_simplejwt',
+    'django_rest_passwordreset',
     'drf_spectacular',
-    
+    'corsheaders',
+
     # Local apps
     'home.apps.HomeConfig',
     'users.apps.UsersConfig',
@@ -52,7 +54,9 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
-    
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+    ),
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
@@ -78,7 +82,7 @@ ROOT_URLCONF = 'GemTopia.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -96,13 +100,13 @@ WSGI_APPLICATION = 'GemTopia.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-import db_conf 
+import email_conf 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql', 
-        'NAME': db_conf.NAME,
-        'USER': db_conf.USER,
-        'PASSWORD': db_conf.PASSWORD,
+        'NAME': email_conf.NAME,
+        'USER': email_conf.USER,
+        'PASSWORD': email_conf.PASSWORD,
         'HOST': 'localhost',  
         'PORT': '3306',
     }
@@ -154,3 +158,13 @@ AUTH_USER_MODEL = 'users.User'
 
 # 400 KB
 MAX_UPLOAD_IMAGE_SIZE = '419430'
+
+# Email Configs:
+import email_conf
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = email_conf.EMAIL_HOST
+EMAIL_HOST_USER = email_conf.EMAIL_HOST_USER
+EMAIL_PORT = 587
+EMAIL_HOST_PASSWORD = email_conf.EMAIL_HOST_PASSWORD
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = 'GemTopia'

@@ -33,9 +33,10 @@ class Game(models.Model):
                                     blank=True, null=True)
 
     num_of_users_get_gemyto = models.PositiveIntegerField(default=20)
-    created_at = models.DateField(auto_now_add=True)
-    updated_at = models.DateField(auto_now=True)
-    deleted_at = models.DateField(null=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    deleted_at = models.DateTimeField(null=True)
 
     def modify_num_of_users_get_gemyto(self):
         N = 20
@@ -86,9 +87,9 @@ class Report(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='game_reports')
     report_text = models.TextField()
     validate = models.BooleanField(default=False)
-    created_at = models.DateField(auto_now_add=True)
-    updated_at = models.DateField(auto_now=True)
-    deleted_at = models.DateField(null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    deleted_at = models.DateTimeField(null=True)
 
     def __str__(self):
         return self.report_text
@@ -101,8 +102,8 @@ class Report(models.Model):
 class Like(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_like')
     game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='game_like')
-    created_at = models.DateField(auto_now_add=True)
-    deleted_at = models.DateField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    deleted_at = models.DateTimeField()
 
     def __str__(self):
         return f'{self.user} liked {self.game}'
@@ -125,9 +126,10 @@ class PlayedGame(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='game_players')
     game_gemyto = models.FloatField(default=0)
     score = models.PositiveIntegerField(default=0)
-    created_at = models.DateField(auto_now_add=True)
-    updated_at = models.DateField(auto_now=True)
-    deleted_at = models.DateField(null=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    deleted_at = models.DateTimeField(null=True)
 
     def __str__(self):
         return f'{self.user} played {self.game}'
@@ -149,9 +151,11 @@ class DailyPlayedGame(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_daily_games')
     game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='game_daily_players')
     score = models.PositiveIntegerField(default=0)
-    created_at = models.DateField(auto_now_add=True)
-    updated_at = models.DateField(auto_now=True)
-    deleted_at = models.DateField(null=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    deleted_at = models.DateTimeField(null=True)
+
     state = models.PositiveIntegerField(choices=STATE_CHOICES, default=0)
     gemyto = models.FloatField(default=0)
 
@@ -162,4 +166,5 @@ class DailyPlayedGame(models.Model):
         ordering = ['score']
         verbose_name = ' daily  played game'
         verbose_name_plural = 'daily played games'
+
         db_table = 'daily_played_game'
