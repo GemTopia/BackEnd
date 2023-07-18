@@ -1,15 +1,12 @@
 from django.db import models
 from users.models import User
+from django.core.validators import MinValueValidator
 
 
 class Wallet(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_wallet')
-    wallet_address = models.CharField(max_length=35)
-    created_at = models.DateField(auto_now_add=True)
-    updated_at = models.DateField(auto_now=True)
-    deleted_at = models.DateField(null=True)
-
-
+    wallet_address = models.CharField(max_length=42)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     objects = models.Manager()
 
@@ -19,10 +16,10 @@ class Wallet(models.Model):
 
 
 class Transaction(models.Model):
-    wallet = models.ForeignKey(Wallet, on_delete=models.CASCADE, related_name='transaction_wallet')
-    type = models.CharField(max_length=50)
-    value = models.PositiveIntegerField()
-    created_at = models.DateField(auto_now_add=True)
+    to_wallet = models.ForeignKey(Wallet, on_delete=models.CASCADE, related_name='transaction_wallet')
+    from_wallet=models.CharField(max_length=42)
+    value = models.FloatField(validators=[MinValueValidator(0.0)])
+    created_at = models.DateTimeField(auto_now_add=True)
 
     objects = models.Manager()
 

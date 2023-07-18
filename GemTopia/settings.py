@@ -37,8 +37,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework_simplejwt',
+    'django_rest_passwordreset',
     'drf_spectacular',
-    
+    'corsheaders',
+
     # Local apps
     'home.apps.HomeConfig',
     'users.apps.UsersConfig',
@@ -46,16 +48,18 @@ INSTALLED_APPS = [
     'game_master.apps.GameMasterConfig',
     'landing.apps.LandingConfig',
     'game.apps.GameConfig',
-    
 ]
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
-    
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+    ),
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
+
 
 SPECTACULAR_SETTINGS = {
     'TITLE': 'GemTopia API',

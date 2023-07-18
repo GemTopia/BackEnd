@@ -1,13 +1,11 @@
 from django.urls import path
-from wallet.views import WalletView
-#from wallet.views import TransactionView
+from wallet.views import WalletAndTransactionView
 
 
 
 app_name = 'wallet'
 urlpatterns = [
-    path("", WalletView.as_view(), name="wallet"),
-    #path("transaction/", TransactionView.as_view(), name="transaction"),
+    path("", WalletAndTransactionView.as_view(), name="wallet"),
 
 ]
 

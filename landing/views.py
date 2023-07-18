@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from landing.models import GemytoInfo
 from django.http import JsonResponse
-import requests
+#import requests
 import json
 
 
