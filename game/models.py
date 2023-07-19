@@ -1,12 +1,11 @@
-from django.core.validators import ValidationError, FileExtensionValidator
-from django.template.defaultfilters import filesizeformat
-from game_master.models import GameMaster
-from django.db.models import Count
 from django.db import models
 from GemTopia import settings
 from users.models import User
+from game_master.models import GameMaster
+from django.template.defaultfilters import filesizeformat
+from django.core.validators import ValidationError, FileExtensionValidator
 import math
-
+from django.db.models import Count
 
 def game_picture_directory_path(instance, filename):
     return 'game/{0}/picture/{1}'.format(str(instance.name), filename)
@@ -78,7 +77,7 @@ class Game(models.Model):
                                    validators=[FileExtensionValidator(VALID_AVATAR_EXTENSION), validate_image_size],
                                    blank=True, null=True)
     num_of_users_get_gemyto = models.PositiveIntegerField(default=20, null=True, blank=True)
-    scores = models.ForeignKey(Scores, on_delete=models.CASCADE, related_name='score_game',null=True)
+    scores = models.ForeignKey(Scores, on_delete=models.CASCADE, related_name='score_game')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True)

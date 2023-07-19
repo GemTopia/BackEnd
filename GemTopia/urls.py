@@ -1,9 +1,17 @@
 from django.contrib import admin
 from django.urls import path, include
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
+from rest_framework import routers
+from game.views import ReportViewSet
+
+
+router = routers.DefaultRouter()
+router.register(r'reports', ReportViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/', include(router.urls)),
+
 
     # Swagger & Redoc UI:
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
@@ -16,5 +24,3 @@ urlpatterns = [
     path("home/", include('home.urls', namespace='home')),
     path('password_reset/', include('django_rest_passwordreset.urls', namespace='password_reset')),
 ]
-
-

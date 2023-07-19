@@ -8,7 +8,7 @@ from users.managers import UserManager
 
 
 def user_avatar_directory_path(instance, filename):
-    return 'user/{0}/avatar/{1}'.format(str(instance.user_name), filename)
+    return 'users/{0}/avatar/{1}'.format(str(instance.user_name), filename)
 
 
 def validate_image_size(image):
@@ -28,8 +28,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     avatar = models.ImageField(upload_to=user_avatar_directory_path,
                                validators=[FileExtensionValidator(VALID_AVATAR_EXTENSION), validate_image_size],
                                blank=True, null=True)
-    total_gemyto = models.FloatField(default=0)
-    gemyto = models.FloatField(default=0)
+    total_gemyto = models.IntegerField(default=0)
+    gemyto=models.IntegerField(default=0)
+    status=models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
     hide_button = models.BooleanField(default=False)

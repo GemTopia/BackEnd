@@ -36,8 +36,9 @@ class UserAdmin(BaseUserAdmin):
 
 
 admin.site.register(User, UserAdmin)
-admin.site.register(SocialMedia)
 admin.site.register(PlayedGame)
 admin.site.register(Game)
 admin.site.register(Scores)
 admin.site.register(DailyPlayedGame)
+admin.site.register(SocialMedia)
+
