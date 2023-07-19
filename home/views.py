@@ -1,3 +1,4 @@
+from itertools import groupby
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from game.models import PlayedGame, Game, DailyPlayedGame
@@ -19,8 +20,8 @@ class HomeView(APIView):
 
     def get(self, request):
         user = request.user
-        user_profile=User.objects.get(user_name=user.user_name)
-        user_profile_serializer = UserRankSerializer(instance=user_profile,many=False)
+        user_profile = User.objects.get(user_name=user.user_name)
+        user_profile_serializer = UserRankSerializer(instance=user_profile, many=False)
         copy_of_data = user_profile_serializer.data
         copy_of_data.pop('total_gemyto')
         copy_of_data.pop('hide_button')
@@ -62,7 +63,24 @@ class GamesView(APIView):
     serializer_class = GameSerializer
 
     def get(self, request):
-        games = Game.objects.order_by('num_of_like')
-        games_serializer = GameSerializer(instance=games, many=True)
+        sort_by = request.GET.get('sort_by', 'rate')
 
-        return Response(games_serializer.data)
+        if sort_by == 'earliest':
+            games_sorted = Game.objects.all().order_by('created_at')
+        elif sort_by == 'latest':
+            games_sorted = Game.objects.all().order_by('-created_at')
+        elif sort_by == 'rate':
+            games_sorted = Game.objects.all().order_by('num_of_like')
+        elif sort_by == 'category':
+            games = Game.objects.all().order_by('game_type',
+                                                'name')
+            grouped_games = {}
+            for game_type, games_group in groupby(games, key=lambda game: game.game_type):
+                grouped_games[game_type] = [GameSerializer(game).data for game in games_group]
+
+            return Response(grouped_games)
+        else:
+            games_sorted = Game.objects.all()
+        serializer = GameSerializer(games_sorted, many=True)
+        return Response(serializer.data)
+

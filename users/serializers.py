@@ -63,7 +63,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('avatar', 'user_name', 'email', 'bio', 'links', 'hide_button', 'referrer_code', 'user_games')
+        fields = ('id','avatar', 'user_name', 'email', 'bio', 'links', 'hide_button', 'referrer_code', 'user_games')
         extra_kwargs = {
             'email': {'read_only': True},
         }
@@ -80,7 +80,7 @@ class UserSerializer(serializers.ModelSerializer):
 class UserRankSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('avatar', 'user_name', 'total_gemyto', 'hide_button')
+        fields = ('id','avatar', 'user_name', 'total_gemyto', 'hide_button')
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
