@@ -14,24 +14,13 @@ urlpatterns = [
     path('redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
 
     # Apps urls:
-<<<<<<< HEAD
-    path("users/", include('users.urls', namespace='users'))    
-]
 
-
-router = routers.DefaultRouter()
-router.register(r'news', NewsViewSet)
-
-
-urlpatterns = [
-    path('', include(router.urls)),
-]
-=======
     path("users/", include('users.urls', namespace='users')),
     path("game/", include('game.urls', namespace='game')),
     path("home/", include('home.urls', namespace='home')),
     path('password_reset/', include('django_rest_passwordreset.urls', namespace='password_reset')),
+    path("", include('landing.urls', namespace='landing')),
+
 ]
 
 
->>>>>>> 8a84b9ee43aa5cb03af4211a3dde5d110f3d8116

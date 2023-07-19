@@ -16,8 +16,5 @@ PyYAML==6.0
 sqlparse==0.4.4
 typing_extensions==4.7.0
 uritemplate==4.1.1
-<<<<<<< HEAD
 boto3
-=======
 django-cors-headers==4.2.0
->>>>>>> 8a84b9ee43aa5cb03af4211a3dde5d110f3d8116
