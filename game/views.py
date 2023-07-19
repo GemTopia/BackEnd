@@ -1,5 +1,6 @@
-from .serializers import GameSerializer, ScoresSerializer, DailyPlayedGameSerializer, ReportSerializer
-from .models import Game, DailyPlayedGame, Report
+from .serializers import GameSerializer, ScoresSerializer, DailyPlayedGameSerializer, ReportSerializer, LikeSerializer
+from .models import Game, DailyPlayedGame, Report, Like
+from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -15,6 +16,7 @@ fourth_level_token = 0.55 * 10
 
 
 class GameView(APIView):
+    permission_classes = (IsAuthenticated,)
     serializer_class = {
         'game': GameSerializer,
         'scores': ScoresSerializer,
@@ -23,7 +25,7 @@ class GameView(APIView):
 
     def get(self, request, game_id):
         game = get_object_or_404(Game, pk=game_id)
-        game_serializer = GameSerializer(instance=game)
+        game_serializer = GameSerializer(instance=game, context={'request': request})
         scores = game.scores
         score_serializer = ScoresSerializer(instance=scores)
         players_score_list = DailyPlayedGame.objects.order_by('score')
@@ -38,6 +40,7 @@ class GameView(APIView):
 
 
 class GameResult(APIView):
+    permission_classes = (IsAuthenticated,)
     serializer_class = DailyPlayedGameSerializer
 
     def post(self, request):
@@ -77,6 +80,7 @@ class GameResult(APIView):
                 daily_played.state = state + 1
             if result_game.validated_data['score'] > daily_played.score:
                 daily_played.score = result_game.validated_data['score']
+                result_game.is_new_record = True
             daily_played.save()
             return Response(result_game.data, status=status.HTTP_200_OK)
         else:
@@ -84,9 +88,33 @@ class GameResult(APIView):
                 if result_game.validated_data['score'] > game_scores.first_level_score:
                     result_game.validated_data['gemyto'] = 0.5
                     result_game.validated_data['state'] = 1
+                    result_game.is_new_record = True
                 result_game.save()
                 return Response(result_game.data, status=status.HTTP_200_OK)
             return Response(result_game.data, status=status.HTTP_400_BAD_REQUEST)
+
+
+class GameLikeView(APIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = LikeSerializer
+
+    def get(self, request, game_id):
+        game = Game.objects.get(pk=game_id)
+        user = request.user
+        like, created = Like.objects.get_or_create(game=game, user=user)
+
+        if not created:
+            like.delete()
+            is_liked_by_user = False
+        else:
+            is_liked_by_user = True
+
+        response_data = {
+            'like': LikeSerializer(like).data,
+            'is_liked_by_user': is_liked_by_user,
+        }
+
+        return Response(response_data)
 
 
 class ReportViewSet(viewsets.ModelViewSet):

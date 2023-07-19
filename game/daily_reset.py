@@ -42,9 +42,11 @@ def daily_reset_played_games():
             highest_score = daily_played_game.first()
             scores_game.max_value = highest_score.score
             scores_game.modify_scores()
+            scores_game.save()
         game.modify_num_of_users_get_gemyto()
+        game.save()
 
 
 scheduler = BackgroundScheduler(timezone=pytz.utc)
-scheduler.add_job(daily_reset_played_games, 'cron', hour=12)
+scheduler.add_job(daily_reset_played_games, 'cron', hour=18, minute=8)
 scheduler.start()
