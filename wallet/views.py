@@ -10,10 +10,6 @@ from wallet.serializers import TransactionSerializer
 from users.serializers import UserRegisterSerializer
 
 
-# from web3 import Web3
-# from wallet import token_info
-
-
 class WalletView(APIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = {

@@ -1,16 +1,10 @@
 from django.contrib import admin
 from django.urls import path, include
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
-from rest_framework import routers
-from game.views import ReportViewSet
 
-
-router = routers.DefaultRouter()
-router.register(r'reports', ReportViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include(router.urls)),
 
 
     # Swagger & Redoc UI:

@@ -27,7 +27,7 @@ class GameSerializer(serializers.ModelSerializer):
 class ReportSerializer(serializers.ModelSerializer):
     class Meta:
         model = Report
-        fields = '__all__'
+        fields = 'game', 'report_text'
 
 
 class ScoresSerializer(serializers.ModelSerializer):

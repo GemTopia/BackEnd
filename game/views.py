@@ -117,18 +117,13 @@ class GameLikeView(APIView):
         return Response(response_data)
 
 
-class ReportViewSet(viewsets.ModelViewSet):
+class ReportView(APIView):
     permission_classes = (IsAuthenticated,)
-    queryset = Report.objects.all()
     serializer_class = ReportSerializer
 
-    def perform_create(self, serializer):
-        report = serializer.save()
-        user = report.user
-        send_mail(
-            subject='Your report is being processed',
-            message='Thank you for submitting your report. We are currently processing it.',
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[user.email],
-            fail_silently=False,
-        )
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            serializer.save(user=request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
