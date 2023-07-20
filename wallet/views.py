@@ -9,7 +9,7 @@ from wallet.serializers import WalletSerializer
 from wallet.serializers import TransactionSerializer,TransactionGetSerializer
 from users.serializers import UserRegisterSerializer
 from game.models import PlayedGame,DailyPlayedGame
-from game.serializers import GameSerializer
+from game.serializers import GameSerializer,DailyPlayedGameSerializer
 
 
 
@@ -26,8 +26,8 @@ class WalletAndTransactionView(APIView):
         transactions=TransactionModel.objects.filter(to_wallet_id__in=wallets_id)
 
 
-        serialized_games=GameSerializer(instance=gemes,many=True)
-        serialized_daily_game=GameSerializer(instance=daily_games,many=True)
+        serialized_games=DailyPlayedGameSerializer(instance=gemes,many=True)
+        serialized_daily_game=DailyPlayedGameSerializer(instance=daily_games,many=True)
         serialized_transactions=TransactionGetSerializer(instance=transactions,many=True)
         serialized_gem=UserRegisterSerializer(instance=user,many=False)
 
