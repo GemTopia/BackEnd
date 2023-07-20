@@ -32,10 +32,10 @@ class HomeView(APIView):
         recent_games_played = [played_game.game for played_game in played_games]
         recent_games_daily = [daily_played_game.game for daily_played_game in daily_played_games]
         recent_games = recent_games_played + recent_games_daily
-        recent_games_serializer = GameSerializer(recent_games, many=True)
+        recent_games_serializer = GameSerializer(recent_games, context={'request': request}, many=True)
 
         ranking_games = Game.objects.order_by('num_of_like')
-        ranking_games_serializer = GameSerializer(instance=ranking_games, many=True)
+        ranking_games_serializer = GameSerializer(instance=ranking_games, context={'request': request}, many=True)
 
         all_players = User.objects.all()
         all_players_serializer = UserRankSerializer(instance=all_players, many=True)
@@ -76,11 +76,11 @@ class GamesView(APIView):
                                                 'name')
             grouped_games = {}
             for game_type, games_group in groupby(games, key=lambda game: game.game_type):
-                grouped_games[game_type] = [GameSerializer(game).data for game in games_group]
+                grouped_games[game_type] = [GameSerializer(game, context={'request': request}).data for game in games_group]
 
             return Response(grouped_games)
         else:
             games_sorted = Game.objects.all()
-        serializer = GameSerializer(games_sorted, many=True)
+        serializer = GameSerializer(games_sorted, context={'request': request}, many=True)
         return Response(serializer.data)
 
