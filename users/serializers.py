@@ -1,17 +1,12 @@
-from rest_framework import serializers
 from users.models import User, SocialMedia
-from game.models import PlayedGame
 from game.serializers import DailyPlayedGameSerializer
 from rest_framework import serializers
-from django_rest_passwordreset.serializers import PasswordTokenSerializer
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-
-        fields = ('user_name', 'email', 'password')
-
+        fields = ('user_name', 'email', 'password','gemyto')
         extra_kwargs = {
             'password': {'write_only': True},
         }

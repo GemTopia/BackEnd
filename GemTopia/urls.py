@@ -23,4 +23,7 @@ urlpatterns = [
     path("game/", include('game.urls', namespace='game')),
     path("home/", include('home.urls', namespace='home')),
     path('password_reset/', include('django_rest_passwordreset.urls', namespace='password_reset')),
+    path("wallet/", include('wallet.urls', namespace='wallets')),
+    path("", include('landing.urls', namespace='landing_page')),
+
 ]

@@ -9,6 +9,8 @@ class Wallet(models.Model):
     updated_at = models.DateField(auto_now=True)
     deleted_at = models.DateField(null=True)
 
+    objects = models.Manager()
+
     class Meta:
         ordering = ['created_at']
         db_table = 'wallet'
@@ -19,6 +21,8 @@ class Transaction(models.Model):
     type = models.CharField(max_length=50)
     value = models.PositiveIntegerField()
     created_at = models.DateField(auto_now_add=True)
+
+    objects = models.Manager()
 
     class Meta:
         ordering = ['created_at']
