@@ -5,10 +5,7 @@ from .models import Game, Report, GamePicture, Scores, DailyPlayedGame, Like
 
 class GameSerializer(serializers.ModelSerializer):
     is_liked_by_user = serializers.SerializerMethodField()
-    num_of_like = serializers.SerializerMethodField()
     game_pictures = serializers.SerializerMethodField()
-    reports = serializers.SerializerMethodField()
-    num_of_report = serializers.SerializerMethodField()
 
     class Meta:
         model = Game
@@ -22,19 +19,9 @@ class GameSerializer(serializers.ModelSerializer):
 
         return False
 
-    def get_num_of_like(self, obj):
-        return obj.game_like.count()
-
     def get_game_pictures(self, obj):
         pictures = obj.game_picture.all()
         return GamePictureSerializer(instance=pictures, many=True).data
-
-    def get_reports(self, obj):
-        reports = obj.game_reports.all()
-        return ReportSerializer(instance=reports, many=True).data
-
-    def get_num_of_report(self, obj):
-        return obj.game_reports.count()
 
 
 class ReportSerializer(serializers.ModelSerializer):

@@ -1,10 +1,11 @@
+from django.core.validators import ValidationError, FileExtensionValidator
+from django.db.models.signals import post_save, post_delete
+from django.template.defaultfilters import filesizeformat
+from django.dispatch import receiver
 from django.db import models
 from GemTopia import settings
 from users.models import User
-from django.template.defaultfilters import filesizeformat
-from django.core.validators import ValidationError, FileExtensionValidator
 import math
-from django.db.models import Count
 
 
 def game_picture_directory_path(instance, filename):
@@ -62,7 +63,8 @@ class Game(models.Model):
     bio = models.TextField()
     name = models.CharField(max_length=200)
     link = models.URLField(null=True)
-    num_of_like = models.PositiveIntegerField(default=0)
+    rank = models.PositiveIntegerField(default=0, editable=False)
+    num_of_like = models.PositiveIntegerField(default=0, editable=False)
     num_of_report = models.PositiveIntegerField(default=0)
     game_type = models.CharField(
         max_length=20,
@@ -86,18 +88,22 @@ class Game(models.Model):
         if not self.pk:
             score = Scores.objects.create()
             self.scores = score
+        self.calculate_and_set_rank()
         super().save(*args, **kwargs)
 
     def modify_num_of_users_get_gemyto(self):
         N = 20
-        game_rank = Game.objects.filter(num_of_like__gt=self.num_of_like).aggregate(rank=Count('num_of_like'))[
-                        'rank'] + 1
+        game_rank = self.rank
         num_of_total_games = Game.objects.count()
-
         totalN = num_of_total_games * N
         a = totalN / (num_of_total_games * (num_of_total_games + 1) / 2)
         self.num_of_users_get_gemyto = a * (num_of_total_games - game_rank + 1)
         print(self.num_of_users_get_gemyto)
+
+    def calculate_and_set_rank(self):
+        games_with_likes = Game.objects.filter(num_of_like__gte=self.num_of_like)
+        game_rank = games_with_likes.filter(created_at__lte=self.created_at).count() + 1
+        self.rank = game_rank
 
     def __str__(self):
         return self.name
@@ -189,3 +195,24 @@ class DailyPlayedGame(models.Model):
         verbose_name = ' daily  played game'
         verbose_name_plural = 'daily played games'
         db_table = 'daily_played_game'
+
+
+@receiver(post_save, sender=Report)
+def update_num_of_report_on_report_save(sender, instance, **kwargs):
+    game = instance.game
+    game.num_of_report = game.game_reports.count()
+    game.save()
+
+
+@receiver(post_save, sender=Like)
+def update_num_of_like_on_like_save(sender, instance, **kwargs):
+    game = instance.game
+    game.num_of_like = game.game_like.count()
+    game.save()
+
+
+@receiver(post_delete, sender=Like)
+def update_num_of_like_on_like_delete(sender, instance, **kwargs):
+    game = instance.game
+    game.num_of_like = game.game_like.count()
+    game.save()
