@@ -1,11 +1,11 @@
 from django.db import models
 from GemTopia import settings
 from users.models import User
-from game_master.models import GameMaster
 from django.template.defaultfilters import filesizeformat
 from django.core.validators import ValidationError, FileExtensionValidator
 import math
 from django.db.models import Count
+
 
 def game_picture_directory_path(instance, filename):
     return 'game/{0}/picture/{1}'.format(str(instance.name), filename)

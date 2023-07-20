@@ -45,7 +45,6 @@ INSTALLED_APPS = [
     'home.apps.HomeConfig',
     'users.apps.UsersConfig',
     'wallet.apps.WalletConfig',
-    'game_master.apps.GameMasterConfig',
     'landing.apps.LandingConfig',
     'game.apps.GameConfig',
     
