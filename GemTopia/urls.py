@@ -19,11 +19,12 @@ urlpatterns = [
     path('redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
 
     # Apps urls:
+
     path("users/", include('users.urls', namespace='users')),
     path("game/", include('game.urls', namespace='game')),
     path("home/", include('home.urls', namespace='home')),
     path('password_reset/', include('django_rest_passwordreset.urls', namespace='password_reset')),
     path("wallet/", include('wallet.urls', namespace='wallets')),
-    path("", include('landing.urls', namespace='landing_page')),
+    path("", include('landing.urls', namespace='landing')),
 
 ]

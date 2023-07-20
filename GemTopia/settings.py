@@ -168,13 +168,3 @@ AUTH_USER_MODEL = 'users.User'
 
 # 400 KB
 MAX_UPLOAD_IMAGE_SIZE = '419430'
-
-# Email Configs:
-import email_conf
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = email_conf.EMAIL_HOST
-EMAIL_HOST_USER = email_conf.EMAIL_HOST_USER
-EMAIL_PORT = 587
-EMAIL_HOST_PASSWORD = email_conf.EMAIL_HOST_PASSWORD
-EMAIL_USE_TLS = True
-DEFAULT_FROM_EMAIL = 'GemTopia'

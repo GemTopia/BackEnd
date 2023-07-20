@@ -1,17 +1,63 @@
 from rest_framework.views import APIView
+from django.core.mail import send_mail
+from .models import EmailForNews, GemytoInfo
+from .serializers import NewsSerializer, GemInfoSerializer
 from rest_framework.response import Response
 from rest_framework import status
-from landing.models import GemytoInfo
-from django.http import JsonResponse
+from datetime import datetime
 import requests
-import json
 
 
+class NewsViewSet(APIView):
+    def post(self, request, *args, **kwargs):
+        if EmailForNews.objects.filter(email=request.data['email']).exists():
+            raise ValueError("This email has already been registered")
+        ser_data = NewsSerializer(data=request.data)
+        if ser_data.is_valid():
+            ser_data.create(ser_data.validated_data)
+        else:
+            return Response(ser_data.errors, status=status.HTTP_400_BAD_REQUEST)
 
+        return Response({'status': 'ok'}, status=status.HTTP_200_OK)
 
-class Landing(APIView):
-    def get(self,request):
-        headers = {'X-CoinAPI-Key': ''}
-        response = requests.get('https://rest.coinapi.io/v1/assets/ring', headers=headers,)
-        return Response(response)
-        
+    def get(self, request):
+        now = datetime.now()
+        if GemytoInfo.objects.filter().exists():
+            latest_record = GemytoInfo.objects.latest('created_at')
+            if latest_record.created_at.date() == now.date() and latest_record.created_at.hour == now.hour and latest_record.created_at.minute + 15 >= now.minute:
+                serialized_ans = GemInfoSerializer(instance=latest_record)
+                json_ans = {'token': serialized_ans.data, }
+                return Response(json_ans)
+            else:
+                headers = {'X-CoinAPI-Key': 'C0BBD2E3-A3B0-4D69-9A2D-73FCF9EBB67F'}
+                response = requests.get('https://rest.coinapi.io/v1/assets/ring', headers=headers, )
+                data = {
+                    'token_value': response.json()[0],
+                }
+                ser_data = GemInfoSerializer(data=data)
+                if ser_data.is_valid():
+                    ser_data.create(ser_data.validated_data)
+                else:
+                    return Response(ser_data.errors, status=status.HTTP_400_BAD_REQUEST)
+                ans = GemytoInfo.objects.latest('created_at')
+                serialized_ans = GemInfoSerializer(instance=ans)
+                json_ans = {'token': serialized_ans.data, }
+                return Response(json_ans)
+
+        else:
+            headers = {'X-CoinAPI-Key': 'C0BBD2E3-A3B0-4D69-9A2D-73FCF9EBB67F'}
+            response = requests.get('https://rest.coinapi.io/v1/assets/ring', headers=headers, )
+            data = {
+                'token_value': response.json()[0],
+            }
+            ser_data = GemInfoSerializer(data=data)
+            if ser_data.is_valid():
+                ser_data.create(ser_data.validated_data)
+            else:
+                return Response(ser_data.errors, status=status.HTTP_400_BAD_REQUEST)
+            ans = GemytoInfo.objects.latest('created_at')
+            serialized_ans = GemInfoSerializer(instance=ans)
+            json_ans = {
+                'token': serialized_ans.data,
+            }
+            return Response(json_ans)
