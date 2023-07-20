@@ -88,7 +88,6 @@ class Game(models.Model):
         if not self.pk:
             score = Scores.objects.create()
             self.scores = score
-        self.calculate_and_set_rank()
         super().save(*args, **kwargs)
 
     def modify_num_of_users_get_gemyto(self):
@@ -98,12 +97,27 @@ class Game(models.Model):
         totalN = num_of_total_games * N
         a = totalN / (num_of_total_games * (num_of_total_games + 1) / 2)
         self.num_of_users_get_gemyto = a * (num_of_total_games - game_rank + 1)
-        print(self.num_of_users_get_gemyto)
 
     def calculate_and_set_rank(self):
-        games_with_likes = Game.objects.filter(num_of_like__gte=self.num_of_like)
-        game_rank = games_with_likes.filter(created_at__lte=self.created_at).count() + 1
+        games_with_more_likes = Game.objects.filter(num_of_like__gt=self.num_of_like)
+        games_with_equal_likes = Game.objects.filter(num_of_like=self.num_of_like)
+
+        # Get the count of games with more likes than the current game
+        games_with_more_likes_count = games_with_more_likes.count()
+
+        # Get the count of games with equal likes but created earlier than the current game
+        games_with_equal_likes_earlier = games_with_equal_likes.filter(created_at__lt=self.created_at)
+        games_with_equal_likes_earlier_count = games_with_equal_likes_earlier.count()
+
+        # Calculate the rank
+        game_rank = games_with_more_likes_count + games_with_equal_likes_earlier_count + 1
         self.rank = game_rank
+
+    def update_all_game_ranks(self):
+        games = Game.objects.all()
+        for game in games:
+            game.calculate_and_set_rank()
+            game.save()
 
     def __str__(self):
         return self.name
@@ -209,6 +223,7 @@ def update_num_of_like_on_like_save(sender, instance, **kwargs):
     game = instance.game
     game.num_of_like = game.game_like.count()
     game.save()
+    Game().update_all_game_ranks()
 
 
 @receiver(post_delete, sender=Like)
@@ -216,3 +231,4 @@ def update_num_of_like_on_like_delete(sender, instance, **kwargs):
     game = instance.game
     game.num_of_like = game.game_like.count()
     game.save()
+    Game().update_all_game_ranks()

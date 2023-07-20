@@ -34,7 +34,7 @@ class HomeView(APIView):
         recent_games = recent_games_played + recent_games_daily
         recent_games_serializer = GameSerializer(recent_games, context={'request': request}, many=True)
 
-        ranking_games = Game.objects.order_by('num_of_like')
+        ranking_games = Game.objects.order_by('-num_of_like')
         ranking_games_serializer = GameSerializer(instance=ranking_games, context={'request': request}, many=True)
 
         all_players = User.objects.all()

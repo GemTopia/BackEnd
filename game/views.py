@@ -118,6 +118,7 @@ class GameLikeView(APIView):
 
 
 class ReportViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAuthenticated,)
     queryset = Report.objects.all()
     serializer_class = ReportSerializer
 
