@@ -4,6 +4,7 @@ from rest_framework import serializers
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = User
         fields = ('user_name', 'email', 'password','gemyto')

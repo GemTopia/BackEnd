@@ -1,94 +1,84 @@
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from wallet.serializers import WalletSerializer
 from rest_framework import status
 from wallet.models import Wallet as walletModel
 from wallet.models import Transaction as TransactionModel
 from users.models import User
 from wallet.serializers import WalletSerializer
-from wallet.serializers import TransactionSerializer
+from wallet.serializers import TransactionSerializer,TransactionGetSerializer
 from users.serializers import UserRegisterSerializer
+from game.models import PlayedGame,DailyPlayedGame
+from game.serializers import GameSerializer,DailyPlayedGameSerializer
 
 
-class WalletView(APIView):
-    permission_classes = (IsAuthenticated,)
-    serializer_class = {
-        'wallets': WalletSerializer,
-        'transactions': TransactionSerializer,
-        'gem': UserRegisterSerializer
-    }
+
+class WalletAndTransactionView(APIView):
 
     def get(self, request):
-        userId = request.user.id
-        wallets = walletModel.objects.filter(user_id=userId, deleted_at=None)
-        wallets_id = walletModel.objects.filter(user_id=userId, deleted_at=None)
-        transactions = TransactionModel.objects.filter(wallet_id__in=wallets_id)
-        user = User.objects.get(id=userId)
-        serialized_wallets = WalletSerializer(instance=wallets, many=True)
-        serialized_transactions = TransactionSerializer(instance=transactions, many=True)
-        serialized_gem = UserRegisterSerializer(instance=user, many=False)
-        serialized_data = {
-            'wallets': serialized_wallets.data,
-            'transactions': serialized_transactions.data,
-            'gem': serialized_gem.data['gemyto']
-        }
+        userId=request.user.id
 
+
+        user=User.objects.get(id=userId)
+        gemes=PlayedGame.objects.filter(user_id=userId)
+        daily_games=DailyPlayedGame.objects.filter(user_id=userId)
+        wallets_id=walletModel.objects.filter(user_id=userId)
+        transactions=TransactionModel.objects.filter(to_wallet_id__in=wallets_id)
+
+
+        serialized_games=DailyPlayedGameSerializer(instance=gemes,many=True)
+        serialized_daily_game=DailyPlayedGameSerializer(instance=daily_games,many=True)
+        serialized_transactions=TransactionGetSerializer(instance=transactions,many=True)
+        serialized_gem=UserRegisterSerializer(instance=user,many=False)
+
+        serialized_data={
+            'daily_games':serialized_daily_game.data,
+            'games':serialized_games.data,
+            'transactions':serialized_transactions.data,
+            'gemyto':serialized_gem.data['gemyto']
+        }
         return Response(serialized_data)
 
-    def post(self, request):
-        ser_data = WalletSerializer(data=request.POST)
-        userId = request.user.id
-        num_of_wallets = walletModel.objects.filter(user_id=userId, deleted_at=None)
-        if len(num_of_wallets) < 3:
-            if ser_data.is_valid():
-                ser_data.validated_data['user_id'] = userId
-                ser_data.create(ser_data.validated_data)
-                return Response(ser_data.validated_data['wallet_address'], status=status.HTTP_200_OK)
-            return Response(ser_data.errors, status=status.HTTP_400_BAD_REQUEST)
-        else:
-            raise ValueError("you  can have 3 wallets or less")
-
-    def delete(self, request):
-        ser_data = WalletSerializer(data=request.POST)
-        user_id = request.user.id
-        if ser_data.is_valid():
-            ser_data.validated_data['user_id'] = user_id
-            ser_data.delete(ser_data.validated_data)
-            return Response('sucssussfully deleted', status=status.HTTP_200_OK)
-        return Response(ser_data.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-""" class TransactionView(APIView):
     def post(self,request):
-        ser_data = WalletSerializer(data=request.POST)
         user_id=request.user.id
-        if ser_data.is_valid():
-                ser_data.validated_data['user_id']=user_id
-                ser_data.validated_data['tyoe']='get'
-                if(Web3.is_checksum_address(ser_data.validated_data['wallet_address'])):
-                    w3 = Web3(Web3.HTTPProvider('https://rinkeby.infura.io/v3/YOUR-PROJECT-ID'))
-                    erc20 = w3.eth.contract(address=ser_data.validated_data['wallet_address'], abi=token_info.ABI)
-                    account = Account.privateKeyToAccount(token_info.PRIVATE_KET)
-                    nonce = w3.eth.getTransactionCount(account.address)
-                    erc20.functions.signTransaction
-                    tx = erc20.functions.transfer(to_address, ser_data.validated_data['value']).buildTransaction({
-                    'from': account.address,
-                    'gas': 100000,
-                    'gasPrice': w3.toWei('1', 'gwei'),
-                    'nonce': nonce,})
-                    signed_tx = account.signTransaction(tx)
-                    tx_hash = w3.eth.sendRawTransaction(signed_tx.rawTransaction)
-                    receipt = w3.eth.wait_for_transaction_receipt(tx_hash)
-                    if receipt.status == 0x1:
-                        ser_data.objects.create(ser_data.validated_data)
-                    else:
-                        raise ValueError('transaction failed')
+        before_gemyto=request.user.gemyto
+        wallet_dict={"wallet_address":request.data['to_wallet'],}
+        wallet_ser_data = WalletSerializer(data=wallet_dict)
 
+        if float(request.data['value'])>0:
+            if float(request.data['value'])<=before_gemyto:
+                if wallet_ser_data.is_valid():
+                    if not walletModel.objects.filter(user_id=user_id,wallet_address=wallet_ser_data.validated_data["wallet_address"]).exists():
+                        wallet_ser_data.validated_data['user_id']=user_id
+                        wallet_ser_data.create(wallet_ser_data.validated_data)
+                    wallet_id=walletModel.objects.get(user=user_id,wallet_address=request.data['to_wallet']).id
+                    transaction_ser_data=TransactionSerializer(data=request.data)
+                    if transaction_ser_data.is_valid():
+                        transaction_ser_data.validated_data['to_wallet_id']=wallet_id
+                        transaction_ser_data.create(transaction_ser_data.validated_data)
+                        user = request.user
+                        subt:float=before_gemyto-float(request.data['value'])
+                        llll={"gemyto":round(subt, 11)}
+                        ser_data = UserRegisterSerializer(instance=user, data=llll, partial=True)
+                        if ser_data.is_valid():
+                            ser_data.save()
+                            return Response(ser_data.data, status=status.HTTP_202_ACCEPTED)
+                        else:
+
+                            return Response(ser_data.errors, status=status.HTTP_400_BAD_REQUEST)
+                        return Response({"status":"ok"}, status=status.HTTP_200_OK)
+                    else:
+                        return Response(transaction_ser_data.errors, status=status.HTTP_400_BAD_REQUEST)
                 else:
-                    raise ValueError('your wallet address is not valid')
-        return Response(ser_data.errors, status=status.HTTP_400_BAD_REQUEST)  """
-""" tx_hash = w3.eth.send_transaction({
-    "from": acct2.address,
-    "value": 3333333333,
-    "to": some_address
-}) """
+                    return Response(wallet_ser_data.errors, status=status.HTTP_400_BAD_REQUEST)
+            else:
+
+                return Response({"error":"you don't have enough gemyto"}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({"error":"the amount of gemyto should positive"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+

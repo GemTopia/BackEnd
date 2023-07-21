@@ -47,7 +47,6 @@ INSTALLED_APPS = [
     'wallet.apps.WalletConfig',
     'landing.apps.LandingConfig',
     'game.apps.GameConfig',
-    
 ]
 
 REST_FRAMEWORK = {
@@ -59,6 +58,7 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
+
 
 SPECTACULAR_SETTINGS = {
     'TITLE': 'GemTopia API',
