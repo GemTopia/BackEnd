@@ -79,13 +79,16 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
 ]
 
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3000',
-]
+# CORS_ALLOWED_ORIGINS = [
+#     'http://localhost:3000',
+# ]
 
-CORS_ALLOWED_HEADERS = [
-    'Authorization',
-]
+# CORS_ALLOWED_HEADERS = [
+#     'Authorization',
+# ]
+
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
 
 ROOT_URLCONF = 'GemTopia.urls'
 
@@ -117,7 +120,7 @@ DATABASES = {
         'NAME': db_conf.NAME,
         'USER': db_conf.USER,
         'PASSWORD': db_conf.PASSWORD,
-        'HOST': 'localhost',  
+        'HOST': db_conf.HOST,  
         'PORT': '3306',
     }
 }
@@ -156,7 +159,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = 'static/'
+MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+STATIC_ROOT = BASE_DIR / 'static'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field

@@ -1,0 +1,30 @@
+version: "3.8"
+
+services:
+  django_app:
+    build:
+      context: .
+    restart: always
+    container_name: gemtopia_app
+    ports:
+      - 127.0.0.1:8000:8000
+    volumes:
+      - type: bind
+        source: ./static
+        target: /gemtopia/static
+      - type: bind
+        source: ./media
+        target: /gemtopia/media
+    depends_on:
+      - db
+
+  db:
+    image: mysql
+    container_name: "gemtopia_db"
+    environment:
+      - MYSQL_ROOT_PASSWORD=hardpass
+      - MYSQL_DATABASE=gemtopia
+    volumes:
+      - gemtopiaMysql:/var/lib/mysql
+volumes:
+  gemtopiaMysql:

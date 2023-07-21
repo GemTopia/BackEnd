@@ -1,3 +1,5 @@
-NAME = 'gemtopia_db'
-USER = 'gemtopia'
-PASSWORD = 'gemtopia_1234'
+NAME = 'gemtopia'
+USER = 'root'
+PASSWORD = 'hardpass'
+HOST = 'db'
+# for local development use Host=localhost
