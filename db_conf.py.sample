@@ -1,0 +1,3 @@
+NAME = 'gemtopia_db'
+USER = 'gemtopia'
+PASSWORD = 'gemtopia_1234'
