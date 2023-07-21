@@ -48,5 +48,5 @@ def daily_reset_played_games():
 
 
 scheduler = BackgroundScheduler(timezone=pytz.utc)
-scheduler.add_job(daily_reset_played_games, 'cron', hour=18, minute=8)
+scheduler.add_job(daily_reset_played_games, 'cron', hour=12)
 scheduler.start()
