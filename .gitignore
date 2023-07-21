@@ -1,2 +1,6 @@
 db_conf.py
 email_conf.py
+venv
+.vscode
+.idea
+__pycache__/
