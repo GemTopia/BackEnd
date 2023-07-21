@@ -26,6 +26,12 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+
+#RECAPTCHA
+RECAPTCHA_PUBLIC_KEY = '6Ld86qcmAAAAALJyRlOtGR4Sf7gpti_TBhRh8wg'
+RECAPTCHA_SECRET_KEY = '6Ld86qcmAAAAAD2wamRCeTHNVqQUXyDf68UZzG4y'
+
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -41,6 +47,7 @@ INSTALLED_APPS = [
     'drf_spectacular',
     'corsheaders',
     'rest_framework_simplejwt.token_blacklist',
+    'captcha',
 
     # Local apps
     'home.apps.HomeConfig',
