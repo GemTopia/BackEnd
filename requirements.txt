@@ -20,3 +20,4 @@ django-cors-headers==4.2.0
 boto3
 django-cors-headers==4.2.0
 apscheduler
+requests

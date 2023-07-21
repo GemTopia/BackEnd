@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django_rest_passwordreset',
     'drf_spectacular',
     'corsheaders',
+    'rest_framework_simplejwt.token_blacklist',
 
     # Local apps
     'home.apps.HomeConfig',

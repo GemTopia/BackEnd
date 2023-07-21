@@ -10,12 +10,14 @@ from wallet.serializers import TransactionSerializer,TransactionGetSerializer
 from users.serializers import UserRegisterSerializer
 from game.models import PlayedGame,DailyPlayedGame
 from game.serializers import GameSerializer,DailyPlayedGameSerializer
+from rest_framework.permissions import IsAuthenticated
 
 
 
 class WalletAndTransactionView(APIView):
-
+    permission_classes = [IsAuthenticated,]
     def get(self, request):
+        
         userId=request.user.id
 
 
@@ -42,6 +44,7 @@ class WalletAndTransactionView(APIView):
 
 
     def post(self,request):
+        permission_classes = [IsAuthenticated]
         user_id=request.user.id
         before_gemyto=request.user.gemyto
         wallet_dict={"wallet_address":request.data['to_wallet'],}
