@@ -13,25 +13,27 @@ from game.serializers import GameSerializer,DailyPlayedGameSerializer
 from rest_framework.permissions import IsAuthenticated
 
 
-
 class WalletAndTransactionView(APIView):
     permission_classes = [IsAuthenticated,]
+
     def get(self, request):
-        
-        userId=request.user.id
+        userId = request.user.id
 
+        user = User.objects.get(id=userId)
 
-        user=User.objects.get(id=userId)
-        gemes=PlayedGame.objects.filter(user_id=userId)
-        daily_games=DailyPlayedGame.objects.filter(user_id=userId)
-        wallets_id=walletModel.objects.filter(user_id=userId)
-        transactions=TransactionModel.objects.filter(to_wallet_id__in=wallets_id)
+        played_games = user.user_games.all()
+        games = [played_game.game for played_game in played_games]
 
+        daily_played_games = user.user_games.all()
+        daily_games = [daily_played_game.game for daily_played_game in daily_played_games]
 
-        serialized_games=DailyPlayedGameSerializer(instance=gemes,many=True)
-        serialized_daily_game=DailyPlayedGameSerializer(instance=daily_games,many=True)
-        serialized_transactions=TransactionGetSerializer(instance=transactions,many=True)
-        serialized_gem=UserRegisterSerializer(instance=user,many=False)
+        wallets_id = walletModel.objects.filter(user_id=userId)
+        transactions = TransactionModel.objects.filter(to_wallet_id__in=wallets_id)
+
+        serialized_games = GameSerializer(instance=games,many=True)
+        serialized_daily_game = DailyPlayedGameSerializer(instance=daily_games,many=True)
+        serialized_transactions = TransactionGetSerializer(instance=transactions,many=True)
+        serialized_gem = UserRegisterSerializer(instance=user,many=False)
 
         serialized_data={
             'daily_games':serialized_daily_game.data,
@@ -40,8 +42,6 @@ class WalletAndTransactionView(APIView):
             'gemyto':serialized_gem.data['gemyto']
         }
         return Response(serialized_data)
-
-
 
     def post(self,request):
         permission_classes = [IsAuthenticated]

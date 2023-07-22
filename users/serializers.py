@@ -62,11 +62,9 @@ class UserSerializer(serializers.ModelSerializer):
     links = SocialMediaSerializer(many=True)
     user_game = serializers.SerializerMethodField()
 
-    # user_games = DailyPlayedGameSerializer(many=True, read_only=True)
-
     class Meta:
         model = User
-        fields = ('id', 'avatar', 'user_name', 'email', 'bio', 'links', 'hide_button', 'referrer_code', 'user_game')
+        fields = ('avatar', 'user_name', 'email', 'bio', 'links', 'hide_button', 'referrer_code', 'user_game')
         extra_kwargs = {
             'email': {'read_only': True},
         }
