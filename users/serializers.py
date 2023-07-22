@@ -1,7 +1,7 @@
 from users.models import User, SocialMedia
 from game.serializers import DailyPlayedGameSerializer
-from rest_framework import serializers
-
+from rest_framework import serializers 
+from django.contrib.auth import password_validation
 
 class UserRegisterSerializer(serializers.ModelSerializer):
 
@@ -38,6 +38,11 @@ class UserRegisterSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('admin can not be in email')
         return value
 
+
+    def validate_password(self, value):
+        if password_validation.validate_password(value):
+            raise serializers.ValidationError('the password is easy please use another')
+        return value
 
 class SocialMediaSerializer(serializers.ModelSerializer):
     class Meta:

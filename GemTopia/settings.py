@@ -120,7 +120,7 @@ WSGI_APPLICATION = 'GemTopia.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-import db_conf 
+import static.db_conf as db_conf
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql', 
@@ -182,7 +182,7 @@ AUTH_USER_MODEL = 'users.User'
 MAX_UPLOAD_IMAGE_SIZE = '419430'
 
 # Email Configs:
-import email_conf
+import static.email_conf as email_conf
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = email_conf.EMAIL_HOST
 EMAIL_HOST_USER = email_conf.EMAIL_HOST_USER
