@@ -1,14 +1,14 @@
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from GemTopia import settings
 from users.serializers import UserRegisterSerializer, UserSerializer, SocialMediaSerializer, ChangePasswordSerializer
-from rest_framework import status, generics
+from rest_framework_simplejwt.tokens import RefreshToken, OutstandingToken
 from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import ValidationError
+from rest_framework.response import Response
+from rest_framework import status, generics
+from rest_framework.views import APIView
 from users.models import User, SocialMedia
 from utils import is_profile_url
-from rest_framework.permissions import IsAuthenticated
-from rest_framework_simplejwt.tokens import RefreshToken, OutstandingToken
-from rest_framework.exceptions import ValidationError
+from GemTopia import settings
 import requests
 
 
@@ -17,19 +17,13 @@ class UserRegistration(APIView):
 
     def post(self, request):
         request.body
-
-        # Get the reCAPTCHA response from the request data
         recaptcha_response = request.data.get('recaptcha_response')
-
-        # Verify the reCAPTCHA response with Google reCAPTCHA API
         data = {
             'response': recaptcha_response,
             'secret': settings.RECAPTCHA_SECRET_KEY
         }
         response = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
         result = response.json()
-
-        # Check if the reCAPTCHA response is valid
         if not result.get('success', False):
             raise ValidationError('Invalid reCAPTCHA. Please try again.')
 
@@ -39,28 +33,20 @@ class UserRegistration(APIView):
             data = {'email': request.data['email'], 'password': request.data['password']}
             response = TokenObtainPairView.as_view()(request._request, data=data)
             return response
-
         return Response(ser_data.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     def post(self, request, *args, **kwargs):
-        # Get the reCAPTCHA response from the request data
         recaptcha_response = request.data.get('recaptcha_response')
-
-        # Verify the reCAPTCHA response with Google reCAPTCHA API
         data = {
             'response': recaptcha_response,
-            'secret': settings.RECAPTCHA_PRIVATE_KEY
+            'secret': settings.RECAPTCHA_SECRET_KEY
         }
         response = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
         result = response.json()
-
-        # Check if the reCAPTCHA response is valid
         if not result.get('success', False):
             raise ValidationError('Invalid reCAPTCHA. Please try again.')
-
-        # Proceed with the login process by calling the parent class's post method
         return super().post(request, *args, **kwargs)
 
 

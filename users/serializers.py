@@ -1,13 +1,13 @@
 from users.models import User, SocialMedia
-from game.serializers import DailyPlayedGameSerializer
-from rest_framework import serializers 
+from game.serializers import GameSerializer
 from django.contrib.auth import password_validation
+from rest_framework import serializers
+
 
 class UserRegisterSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = User
-        fields = ('user_name', 'email', 'password','gemyto')
+        fields = ('user_name', 'email', 'password', 'gemyto')
         extra_kwargs = {
             'password': {'write_only': True},
         }
@@ -38,11 +38,11 @@ class UserRegisterSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('admin can not be in email')
         return value
 
-
     def validate_password(self, value):
         if password_validation.validate_password(value):
             raise serializers.ValidationError('the password is easy please use another')
         return value
+
 
 class SocialMediaSerializer(serializers.ModelSerializer):
     class Meta:
@@ -60,14 +60,21 @@ class SocialMediaSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
     links = SocialMediaSerializer(many=True)
-    user_games = DailyPlayedGameSerializer(many=True, read_only=True)
+    user_game = serializers.SerializerMethodField()
+
+    # user_games = DailyPlayedGameSerializer(many=True, read_only=True)
 
     class Meta:
         model = User
-        fields = ('id','avatar', 'user_name', 'email', 'bio', 'links', 'hide_button', 'referrer_code', 'user_games')
+        fields = ('id', 'avatar', 'user_name', 'email', 'bio', 'links', 'hide_button', 'referrer_code', 'user_game')
         extra_kwargs = {
             'email': {'read_only': True},
         }
+
+    def get_user_game(self, obj):
+        played_games = obj.user_games.all()
+        games = [played_game.game for played_game in played_games]
+        return GameSerializer(instance=games, many=True).data
 
     def update(self, instance, validated_data):
         instance.avatar = validated_data.get('avatar', instance.avatar)
@@ -81,7 +88,7 @@ class UserSerializer(serializers.ModelSerializer):
 class UserRankSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id','avatar', 'user_name', 'total_gemyto', 'hide_button')
+        fields = ('id', 'avatar', 'user_name', 'total_gemyto', 'hide_button')
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
