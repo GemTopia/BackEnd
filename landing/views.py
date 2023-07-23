@@ -29,16 +29,17 @@ class NewsViewSet(APIView):
 
         if GemytoInfo.objects.filter().exists():
             latest_record = GemytoInfo.objects.latest('created_at')
-            if latest_record.created_at.date() == now.date() and latest_record.created_at.hour == now.hour and latest_record.created_at.minute + 15 >= now.minute:
+            if latest_record.created_at.date() == now.date() and latest_record.created_at.hour == now.hour and latest_record.created_at.minute + 2 >= now.minute:
                 serialized_ans = GemInfoSerializer(instance=latest_record)
                 json_ans = {'token': serialized_ans.data}
                 json_ans['top_3_games'] = serialized_top_3_games.data
                 return Response(json_ans)
             else:
-                headers = {'X-CoinAPI-Key': 'C0BBD2E3-A3B0-4D69-9A2D-73FCF9EBB67F'}
-                response = requests.get('https://rest.coinapi.io/v1/assets/ring', headers=headers)
+                headers = {'authorization': 'Apikey 3f366a797e88fabecc779b422ee980a9cc4ae8a0deebb1e812d4d9454a5978ee'}
+                response = requests.get('https://min-api.cryptocompare.com/data/pricemultifull?fsyms=MANA&tsyms=USD', headers=headers)
+                
                 data = {
-                    'token_value': response.json()[0],
+                    'token_value': response.json()['DISPLAY']
                 }
                 ser_data = GemInfoSerializer(data=data)
                 if ser_data.is_valid():
@@ -48,13 +49,14 @@ class NewsViewSet(APIView):
                 ans = GemytoInfo.objects.latest('created_at')
                 serialized_ans = GemInfoSerializer(instance=ans)
                 json_ans = {'token': serialized_ans.data}
+                json_ans['top_3_games'] = serialized_top_3_games.data
                 return Response(json_ans)
 
         else:
-            headers = {'X-CoinAPI-Key': 'C0BBD2E3-A3B0-4D69-9A2D-73FCF9EBB67F'}
-            response = requests.get('https://rest.coinapi.io/v1/assets/ring', headers=headers)
+            headers = {'authorization': 'Apikey 3f366a797e88fabecc779b422ee980a9cc4ae8a0deebb1e812d4d9454a5978ee'}
+            response = requests.get('https://min-api.cryptocompare.com/data/pricemultifull?fsyms=MANA&tsyms=USD', headers=headers)
             data = {
-                'token_value': response.json()[0],
+                'token_value': response.json()['DISPLAY']
             }
             ser_data = GemInfoSerializer(data=data)
             if ser_data.is_valid():
@@ -66,7 +68,16 @@ class NewsViewSet(APIView):
             json_ans = {
                 'token': serialized_ans.data,
             }
+            
 
         json_ans['top_3_games'] = serialized_top_3_games.data
 
         return Response(json_ans)
+
+class JustEndpoint(APIView):
+    def get(self,request):
+        return Response({'status':'ok'},status=status.HTTP_200_OK)
+
+
+#another url in token api  
+#https://min-api.cryptocompare.com/data/generateAvg?fsym=BTC&tsym=USD&e=Kraken
