@@ -64,13 +64,12 @@ class GamesView(APIView):
 
     def get(self, request):
         sort_by = request.GET.get('sort_by', 'rate')
-
         if sort_by == 'earliest':
             games_sorted = Game.objects.all().order_by('created_at')
         elif sort_by == 'latest':
             games_sorted = Game.objects.all().order_by('-created_at')
         elif sort_by == 'rate':
-            games_sorted = Game.objects.all().order_by('num_of_like')
+            games_sorted = Game.objects.all().order_by('-num_of_like')
         elif sort_by == 'category':
             games = Game.objects.all().order_by('game_type',
                                                 'name')

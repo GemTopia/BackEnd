@@ -1,5 +1,5 @@
-static/db_conf.py
-static/email_conf.py
+db_conf.py
+email_conf.py
 venv
 .vscode
 .idea

@@ -24,13 +24,13 @@ class WalletAndTransactionView(APIView):
         played_games = user.user_games.all()
         games = [played_game.game for played_game in played_games]
 
-        daily_played_games = user.user_games.all()
+        daily_played_games = user.user_daily_games.all()
         daily_games = [daily_played_game.game for daily_played_game in daily_played_games]
 
         wallets_id = walletModel.objects.filter(user_id=userId)
         transactions = TransactionModel.objects.filter(to_wallet_id__in=wallets_id)
 
-        serialized_games = GameSerializer(instance=games,many=True)
+        serialized_games = GameSerializer(instance=games, many=True)
         serialized_daily_game = DailyPlayedGameSerializer(instance=daily_games,many=True)
         serialized_transactions = TransactionGetSerializer(instance=transactions,many=True)
         serialized_gem = UserRegisterSerializer(instance=user,many=False)
