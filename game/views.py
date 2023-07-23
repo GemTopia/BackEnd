@@ -1,6 +1,6 @@
 from .serializers import GameSerializer, ScoresSerializer, DailyPlayedGameSerializer, ReportSerializer, LikeSerializer
 from rest_framework.permissions import IsAuthenticated
-from .models import Game, DailyPlayedGame,Like
+from .models import Game, DailyPlayedGame, Like
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -23,15 +23,30 @@ class GameView(APIView):
     def get(self, request, game_id):
         game = get_object_or_404(Game, pk=game_id)
         game_serializer = GameSerializer(instance=game, context={'request': request})
+
         scores = game.scores
         score_serializer = ScoresSerializer(instance=scores)
-        players_score_list = DailyPlayedGame.objects.order_by('score')
-        players_list_serializer = DailyPlayedGameSerializer(instance=players_score_list, many=True)
+
+        players_score_list = DailyPlayedGame.objects.filter(game=game).order_by('-score')
+        players_list_serializer = []
+
+        for player in players_score_list:
+            user_data = {
+                'id': player.user.id,
+                'user_name': player.user.user_name,
+
+
+                'avatar': None,
+                'score': player.score,
+            }
+            if player.user.avatar:
+                user_data['avatar'] = player.user.avatar.url
+            players_list_serializer.append(user_data)
 
         serialized_data = {
             'game': game_serializer.data,
             'scores': score_serializer.data,
-            'players_list': players_list_serializer.data
+            'players_list': players_list_serializer
         }
         return Response(serialized_data)
 
@@ -41,10 +56,11 @@ class GameResult(APIView):
     serializer_class = DailyPlayedGameSerializer
 
     def post(self, request):
+        user = request.user
         result_game = self.serializer_class(data=request.data)
         result_game.is_valid(raise_exception=True)
         game = result_game.validated_data['game']
-        user = result_game.validated_data['user']
+        result_game.validated_data['user'] = user
         game_scores = game.scores
 
         if DailyPlayedGame.objects.filter(game=game, user=user).exists():

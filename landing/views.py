@@ -1,5 +1,4 @@
 from rest_framework.views import APIView
-from django.core.mail import send_mail
 from game.models import Game
 from game.serializers import GameSerializer
 from .models import EmailForNews, GemytoInfo
@@ -11,6 +10,11 @@ import requests
 
 
 class NewsViewSet(APIView):
+    serializer_class = {
+        'news': NewsSerializer,
+        'gem_info': GemInfoSerializer,
+    }
+
     def post(self, request, *args, **kwargs):
         if EmailForNews.objects.filter(email=request.data['email']).exists():
             raise ValueError("This email has already been registered")
@@ -36,8 +40,9 @@ class NewsViewSet(APIView):
                 return Response(json_ans)
             else:
                 headers = {'authorization': 'Apikey 3f366a797e88fabecc779b422ee980a9cc4ae8a0deebb1e812d4d9454a5978ee'}
-                response = requests.get('https://min-api.cryptocompare.com/data/pricemultifull?fsyms=MANA&tsyms=USD', headers=headers)
-                
+                response = requests.get('https://min-api.cryptocompare.com/data/pricemultifull?fsyms=MANA&tsyms=USD',
+                                        headers=headers)
+
                 data = {
                     'token_value': response.json()['DISPLAY']
                 }
@@ -54,7 +59,8 @@ class NewsViewSet(APIView):
 
         else:
             headers = {'authorization': 'Apikey 3f366a797e88fabecc779b422ee980a9cc4ae8a0deebb1e812d4d9454a5978ee'}
-            response = requests.get('https://min-api.cryptocompare.com/data/pricemultifull?fsyms=MANA&tsyms=USD', headers=headers)
+            response = requests.get('https://min-api.cryptocompare.com/data/pricemultifull?fsyms=MANA&tsyms=USD',
+                                    headers=headers)
             data = {
                 'token_value': response.json()['DISPLAY']
             }
@@ -68,16 +74,10 @@ class NewsViewSet(APIView):
             json_ans = {
                 'token': serialized_ans.data,
             }
-            
 
         json_ans['top_3_games'] = serialized_top_3_games.data
 
         return Response(json_ans)
 
-class JustEndpoint(APIView):
-    def get(self,request):
-        return Response({'status':'ok'},status=status.HTTP_200_OK)
-
-
-#another url in token api  
-#https://min-api.cryptocompare.com/data/generateAvg?fsym=BTC&tsym=USD&e=Kraken
+# another url in token api
+# https://min-api.cryptocompare.com/data/generateAvg?fsym=BTC&tsym=USD&e=Kraken

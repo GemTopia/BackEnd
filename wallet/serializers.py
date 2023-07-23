@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from wallet.models import Wallet,Transaction
-from django.utils import timezone
 
 
 class WalletSerializer(serializers.ModelSerializer):
@@ -19,6 +18,7 @@ class TransactionGetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transaction
         fields = ('wallet_address', 'from_wallet', 'value', 'created_at',)
+
 
 class TransactionSerializer(serializers.ModelSerializer):
     class Meta:

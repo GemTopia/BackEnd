@@ -1,5 +1,4 @@
 from rest_framework import serializers
-
 from .models import Game, Report, GamePicture, Scores, DailyPlayedGame, Like
 
 
@@ -37,11 +36,11 @@ class ScoresSerializer(serializers.ModelSerializer):
 
 
 class DailyPlayedGameSerializer(serializers.ModelSerializer):
-    gemyto = serializers.IntegerField(default=0)
+    gemyto = serializers.FloatField(default=0)
 
     class Meta:
         model = DailyPlayedGame
-        fields = ('game', 'user', 'score', 'gemyto')
+        fields = ('game', 'user', 'score', 'gemyto', 'state')
 
 
 class GamePictureSerializer(serializers.ModelSerializer):
