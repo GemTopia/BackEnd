@@ -36,8 +36,7 @@ class ScoresSerializer(serializers.ModelSerializer):
 
 
 class DailyPlayedGameSerializer(serializers.ModelSerializer):
-    # game_gemyto = serializers.FloatField(default=0)
-    # is_new_record = serializers.BooleanField(default=False, allow_null=True)
+    is_new_record = serializers.BooleanField(default=False, allow_null=True)
 
     class Meta:
         model = DailyPlayedGame
