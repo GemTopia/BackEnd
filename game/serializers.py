@@ -37,10 +37,12 @@ class ScoresSerializer(serializers.ModelSerializer):
 
 class DailyPlayedGameSerializer(serializers.ModelSerializer):
     gemyto = serializers.FloatField(default=0)
+    game_name = serializers.CharField(source='game.name', allow_null=True, allow_blank=True)
+    game_image = serializers.CharField(source='game.cover_image', allow_null=True, allow_blank=True)
 
     class Meta:
         model = DailyPlayedGame
-        fields = ('game', 'user', 'score', 'gemyto', 'state')
+        fields = ('game', 'user', 'score', 'gemyto', 'state', 'game_name', 'game_image')
 
 
 class GamePictureSerializer(serializers.ModelSerializer):

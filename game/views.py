@@ -29,13 +29,10 @@ class GameView(APIView):
 
         players_score_list = DailyPlayedGame.objects.filter(game=game).order_by('-score')
         players_list_serializer = []
-
         for player in players_score_list:
             user_data = {
                 'id': player.user.id,
                 'user_name': player.user.user_name,
-
-
                 'avatar': None,
                 'score': player.score,
             }
