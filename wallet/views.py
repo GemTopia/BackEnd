@@ -4,7 +4,7 @@ from rest_framework import status
 from wallet.models import Wallet as walletModel
 from wallet.models import Transaction as TransactionModel
 from users.models import User
-from wallet.serializers import WalletSerializer
+from wallet.serializers import WalletSerializer,WalletGamesSerializer
 from wallet.serializers import TransactionSerializer, TransactionGetSerializer
 from users.serializers import UserRegisterSerializer
 from game.serializers import GameSerializer, DailyPlayedGameSerializer
@@ -23,20 +23,20 @@ class WalletAndTransactionView(APIView):
 
     def get(self, request):
         userId = request.user.id
-
         user = User.objects.get(id=userId)
-
-        played_games = user.user_games.all()
-        games = [played_game for played_game in played_games]
-        serialized_games = DailyPlayedGameSerializer(instance=games, many=True)
 
         daily_played_games = user.user_daily_games.all()
         daily_games = [daily_played_game for daily_played_game in daily_played_games]
-        serialized_daily_game = DailyPlayedGameSerializer(instance=daily_games, many=True)
+        serialized_daily_game = WalletGamesSerializer(instance=daily_games, many=True)
+
+        played_games = user.user_games.all()
+        games = [played_game for played_game in played_games]
+        serialized_games = WalletGamesSerializer(instance=games, many=True)
 
         wallets_id = walletModel.objects.filter(user_id=userId)
         transactions = TransactionModel.objects.filter(to_wallet_id__in=wallets_id)
         serialized_transactions = TransactionGetSerializer(instance=transactions, many=True)
+
         serialized_gem = UserRegisterSerializer(instance=user, many=False)
 
         serialized_data = {

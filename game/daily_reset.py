@@ -12,7 +12,7 @@ def daily_reset_played_games():
 
         for daily_played in daily_played_game:
             user = User.objects.get(id=daily_played.user.id)
-            earned_gemyto = daily_played.gemyto
+            earned_gemyto = daily_played.game_gemyto
 
             try:
                 played = PlayedGame.objects.get(user=user, game=game)
@@ -21,13 +21,14 @@ def daily_reset_played_games():
                 if n_top_player > 0:
                     played.game_gemyto = played.game_gemyto + earned_gemyto
                     user.total_gemyto = user.total_gemyto + earned_gemyto
+                    user.gemyto = user.gemyto + earned_gemyto
                     user.save()
                     n_top_player = n_top_player - 1
                 played.save()
             except PlayedGame.DoesNotExist:
                 if n_top_player > 0:
-
                     user.total_gemyto = user.total_gemyto + earned_gemyto
+                    user.gemyto = user.gemyto + earned_gemyto
                     user.save()
                     n_top_player = n_top_player - 1
                 else:

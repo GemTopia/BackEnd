@@ -1,15 +1,15 @@
 from rest_framework import serializers
-from wallet.models import Wallet,Transaction
+from wallet.models import Wallet, Transaction
+from game.models import DailyPlayedGame
 
 
 class WalletSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Wallet
         fields = ('wallet_address',)
 
     def create(self, validated_data):
-        return Wallet.objects.create(**validated_data,)
+        return Wallet.objects.create(**validated_data, )
 
 
 class TransactionGetSerializer(serializers.ModelSerializer):
@@ -23,9 +23,16 @@ class TransactionGetSerializer(serializers.ModelSerializer):
 class TransactionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transaction
-        fields = ('to_wallet_id','from_wallet','value','created_at',)
+        fields = ('to_wallet_id', 'from_wallet', 'value', 'created_at',)
 
-        def create(self,validated_data):
+        def create(self, validated_data):
             return Transaction.objects.create(**validated_data)
 
 
+class WalletGamesSerializer(serializers.ModelSerializer):
+    game_name = serializers.CharField(source='game.name')
+    cover_image = serializers.CharField(source='game.cover_image')
+
+    class Meta:
+        model = DailyPlayedGame
+        fields = ('id', 'game_gemyto', 'cover_image', 'game_name')

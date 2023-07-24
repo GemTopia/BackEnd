@@ -102,14 +102,11 @@ class Game(models.Model):
         games_with_more_likes = Game.objects.filter(num_of_like__gt=self.num_of_like)
         games_with_equal_likes = Game.objects.filter(num_of_like=self.num_of_like)
 
-        # Get the count of games with more likes than the current game
         games_with_more_likes_count = games_with_more_likes.count()
 
-        # Get the count of games with equal likes but created earlier than the current game
         games_with_equal_likes_earlier = games_with_equal_likes.filter(created_at__lt=self.created_at)
         games_with_equal_likes_earlier_count = games_with_equal_likes_earlier.count()
 
-        # Calculate the rank
         game_rank = games_with_more_likes_count + games_with_equal_likes_earlier_count + 1
         self.rank = game_rank
 
@@ -199,7 +196,8 @@ class DailyPlayedGame(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True)
     state = models.PositiveIntegerField(choices=STATE_CHOICES, default=0)
-    gemyto = models.FloatField(default=0)
+    game_gemyto = models.FloatField(default=0)
+    is_new_record = models.BooleanField(default=False, null=True, blank=True)
 
     def __str__(self):
         return f'{self.user} played {self.game} daily'

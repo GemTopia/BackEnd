@@ -84,21 +84,21 @@ class GameResult(APIView):
             result_game.validated_data['state'] = state
             if state < 4 and result_game.validated_data['score'] > level_score:
                 gemyto = level_tokens.get(state)
-                result_game.validated_data['gemyto'] = gemyto
+                result_game.validated_data['game_gemyto'] = gemyto
                 result_game.validated_data['state'] = state + 1
-                daily_played.gemyto = gemyto + daily_played.gemyto
+                daily_played.game_gemyto = gemyto + daily_played.game_gemyto
                 daily_played.state = state + 1
             if result_game.validated_data['score'] > daily_played.score:
                 daily_played.score = result_game.validated_data['score']
-                result_game.is_new_record = True
+                result_game.validated_data['is_new_record'] = True
             daily_played.save()
             return Response(result_game.data, status=status.HTTP_200_OK)
         else:
             if result_game.is_valid():
                 if result_game.validated_data['score'] > game_scores.first_level_score:
-                    result_game.validated_data['gemyto'] = 0.5
+                    result_game.validated_data['game_gemyto'] = 0.5
                     result_game.validated_data['state'] = 1
-                    result_game.is_new_record = True
+                    result_game.validated_data['is_new_record'] = True
                 result_game.save()
                 return Response(result_game.data, status=status.HTTP_200_OK)
             return Response(result_game.data, status=status.HTTP_400_BAD_REQUEST)
