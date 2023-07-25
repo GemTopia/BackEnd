@@ -191,4 +191,5 @@ EMAIL_HOST_PASSWORD = email_conf.EMAIL_HOST_PASSWORD
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = 'GemTopia'
 
+
 CSRF_TRUSTED_ORIGINS = ['http://api.gem.kveh.ir']
