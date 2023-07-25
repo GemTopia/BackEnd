@@ -23,7 +23,7 @@ class HomeView(APIView):
         user_profile = User.objects.get(user_name=user.user_name)
         user_profile_serializer = UserRankSerializer(instance=user_profile, many=False)
         copy_of_data = user_profile_serializer.data
-        copy_of_data.pop('total_gemyto')
+        copy_of_data['total_gemyto']=0
         copy_of_data.pop('hide_button')
         copy_of_data.pop('avatar')
 
