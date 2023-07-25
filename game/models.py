@@ -70,7 +70,6 @@ class Game(models.Model):
         max_length=20,
         choices=GAME_TYPE_CHOICES
     )
-
     is_active = models.BooleanField(default=True)
     cover_image = models.ImageField(upload_to=game_picture_directory_path,
                                     validators=[FileExtensionValidator(VALID_AVATAR_EXTENSION), validate_image_size],
