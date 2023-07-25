@@ -103,7 +103,6 @@ class Game(models.Model):
         games_with_equal_likes = Game.objects.filter(num_of_like=self.num_of_like)
 
         games_with_more_likes_count = games_with_more_likes.count()
-
         games_with_equal_likes_earlier = games_with_equal_likes.filter(created_at__lt=self.created_at)
         games_with_equal_likes_earlier_count = games_with_equal_likes_earlier.count()
 

@@ -2,10 +2,10 @@ from itertools import groupby
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from game.models import PlayedGame, Game, DailyPlayedGame
-from users.models import User
 from game.serializers import GameSerializer, DailyPlayedGameSerializer
-from users.serializers import UserRankSerializer
 from rest_framework.permissions import IsAuthenticated
+from users.serializers import UserRankSerializer
+from users.models import User
 
 
 class HomeView(APIView):

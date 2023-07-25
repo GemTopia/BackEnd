@@ -1,13 +1,13 @@
 from users.serializers import UserRegisterSerializer, UserSerializer, SocialMediaSerializer, ChangePasswordSerializer
-from rest_framework_simplejwt.tokens import RefreshToken, OutstandingToken
 from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
-from rest_framework import status, generics
 from rest_framework.views import APIView
 from users.models import User, SocialMedia
 from utils import is_profile_url
+from rest_framework import status
 from GemTopia import settings
 import requests
 

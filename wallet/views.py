@@ -1,14 +1,14 @@
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from wallet.models import Wallet as walletModel
-from wallet.models import Transaction as TransactionModel
-from users.models import User
-from wallet.serializers import WalletSerializer,WalletGamesSerializer
 from wallet.serializers import TransactionSerializer, TransactionGetSerializer
-from users.serializers import UserRegisterSerializer
+from wallet.serializers import WalletSerializer,WalletGamesSerializer
 from game.serializers import GameSerializer, DailyPlayedGameSerializer
+from wallet.models import Transaction as TransactionModel
+from users.serializers import UserRegisterSerializer
 from rest_framework.permissions import IsAuthenticated
+from wallet.models import Wallet as walletModel
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework import status
+from users.models import User
 
 
 class WalletAndTransactionView(APIView):

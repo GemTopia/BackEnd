@@ -1,5 +1,4 @@
 from django.db import models
-from datetime import datetime, timedelta
 
 
 class GemytoInfo(models.Model):

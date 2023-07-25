@@ -1,6 +1,6 @@
-from rest_framework import serializers
 from wallet.models import Wallet, Transaction
 from game.models import DailyPlayedGame
+from rest_framework import serializers
 
 
 class WalletSerializer(serializers.ModelSerializer):

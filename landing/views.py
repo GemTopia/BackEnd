@@ -1,11 +1,11 @@
 from rest_framework.views import APIView
-from game.models import Game
 from game.serializers import GameSerializer
 from .models import EmailForNews, GemytoInfo
 from .serializers import NewsSerializer, GemInfoSerializer
 from rest_framework.response import Response
 from rest_framework import status
 from datetime import datetime
+from game.models import Game
 import requests
 
 
@@ -79,5 +79,3 @@ class NewsViewSet(APIView):
 
         return Response(json_ans)
 
-# another url in token api
-# https://min-api.cryptocompare.com/data/generateAvg?fsym=BTC&tsym=USD&e=Kraken
