@@ -45,8 +45,7 @@ class HomeView(APIView):
 
         for player_data in all_players_serializer.data:
             if player_data not in top_players_serializer.data and player_data['hide_button'] is False:
-                player_data.pop('total_gemyto')
-
+                player_data['total_gemyto']=0
         serialized_data = {
             'recent_games': recent_games_serializer.data,
             'ranking_games': ranking_games_serializer.data,
