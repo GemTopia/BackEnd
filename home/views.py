@@ -23,7 +23,7 @@ class HomeView(APIView):
         user_profile = User.objects.get(user_name=user.user_name)
         user_profile_serializer = UserRankSerializer(instance=user_profile, many=False)
         copy_of_data = user_profile_serializer.data
-        copy_of_data['total_gemyto']=0
+        copy_of_data['total_gemyto'] = 0
         copy_of_data.pop('hide_button')
         copy_of_data.pop('avatar')
 
@@ -32,10 +32,10 @@ class HomeView(APIView):
         recent_games_played = [played_game.game for played_game in played_games]
         recent_games_daily = [daily_played_game.game for daily_played_game in daily_played_games]
         recent_games = recent_games_played + recent_games_daily
-        recent_games_serializer = GameSerializer(recent_games, context={'request': request}, many=True)
+        recent_games_serializer = GameSerializer(recent_games, context={'user': user}, many=True)
 
         ranking_games = Game.objects.order_by('-num_of_like')
-        ranking_games_serializer = GameSerializer(instance=ranking_games, context={'request': request}, many=True)
+        ranking_games_serializer = GameSerializer(instance=ranking_games, context={'user': user}, many=True)
 
         all_players = User.objects.all()
         all_players_serializer = UserRankSerializer(instance=all_players, many=True)
@@ -45,7 +45,7 @@ class HomeView(APIView):
 
         for player_data in all_players_serializer.data:
             if player_data not in top_players_serializer.data and player_data['hide_button'] is False:
-                player_data['total_gemyto']=0
+                player_data['total_gemyto'] = 0
         serialized_data = {
             'recent_games': recent_games_serializer.data,
             'ranking_games': ranking_games_serializer.data,
@@ -62,6 +62,7 @@ class GamesView(APIView):
     serializer_class = GameSerializer
 
     def get(self, request):
+        user=request.user
         sort_by = request.GET.get('sort_by', 'rate')
         if sort_by == 'earliest':
             games_sorted = Game.objects.all().order_by('created_at')
@@ -74,11 +75,11 @@ class GamesView(APIView):
                                                 'name')
             grouped_games = {}
             for game_type, games_group in groupby(games, key=lambda game: game.game_type):
-                grouped_games[game_type] = [GameSerializer(game, context={'request': request}).data for game in games_group]
+                grouped_games[game_type] = [GameSerializer(game, context={'user': user}).data for game in
+                                            games_group]
 
             return Response(grouped_games)
         else:
             games_sorted = Game.objects.all()
-        serializer = GameSerializer(games_sorted, context={'request': request}, many=True)
+        serializer = GameSerializer(games_sorted, context={'user': user}, many=True)
         return Response(serializer.data)
-

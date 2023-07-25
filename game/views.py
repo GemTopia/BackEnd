@@ -21,8 +21,9 @@ class GameView(APIView):
     }
 
     def get(self, request, game_id):
+        user = request.user
         game = get_object_or_404(Game, pk=game_id)
-        game_serializer = GameSerializer(instance=game, context={'request': request})
+        game_serializer = GameSerializer(instance=game, context={'user': user})
 
         scores = game.scores
         score_serializer = ScoresSerializer(instance=scores)

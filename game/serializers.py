@@ -11,10 +11,10 @@ class GameSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_is_liked_by_user(self, obj):
-        request = self.context.get('request')
+        user = self.context.get('user')
 
-        if request and request.user.is_authenticated:
-            return obj.game_like.filter(user=request.user).exists()
+        if user and user.is_authenticated:
+            return obj.game_like.filter(user=user).exists()
 
         return False
 
