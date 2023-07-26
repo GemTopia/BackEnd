@@ -40,7 +40,7 @@ class HomeView(APIView):
         all_players = User.objects.all()
         all_players_serializer = UserRankSerializer(instance=all_players, many=True)
 
-        top_players = all_players.filter(hide_button=False).order_by('total_gemyto')[:20]
+        top_players = all_players.filter(hide_button=False).order_by('-total_gemyto')[:20]
         top_players_serializer = UserRankSerializer(instance=top_players, many=True)
 
         for player_data in all_players_serializer.data:
